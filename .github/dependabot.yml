@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(deps/maven):"
+    labels:
+      - "type:dependabot"
+      - "type:dependencies-maven"
+
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(deps/docker):"
+    labels:
+      - "type:dependabot"
+      - "type:dependencies-docker"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore(deps/github-actions):"
+    labels:
+      - "type:dependabot"
+      - "type:dependencies-github-actions"
