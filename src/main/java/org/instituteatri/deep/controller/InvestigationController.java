@@ -12,4 +12,5 @@ public class InvestigationController {
     public String getInvestigation() {
         return "Hello, Deep!";
     }
+
 }
