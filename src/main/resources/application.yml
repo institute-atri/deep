@@ -1,3 +1,6 @@
 spring:
   application:
     name: deep
+  profiles:
+    active:
+    - dev
