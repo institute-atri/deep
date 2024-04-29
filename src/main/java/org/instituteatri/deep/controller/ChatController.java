@@ -5,10 +5,8 @@ import java.util.Map;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -31,5 +29,11 @@ public class ChatController {
             @RequestParam(value = "message", defaultValue = "Alô, quem ta ai?") String message) {
         Prompt prompt = new Prompt(message);
         return chatClient.stream(prompt);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMessage(@PathVariable("id") Long id) {
+
+        return ResponseEntity.noContent().build();
     }
 }
