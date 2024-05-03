@@ -345,3 +345,6 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,linux,java,kotlin,gradle,maven,visualstudiocode,intellij+all,netbeans,eclipse
+
+### Env files
+src/main/resources/secrets.properties
