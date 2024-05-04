@@ -18,6 +18,22 @@ public class AccountTokenComponent {
     private final TokenService tokenService;
     private final UserRepository userRepository;
 
+    /**
+     * This `generateTokenResponse` method is responsible for generating access and refresh tokens
+     * for a specific user. First, it calls the `tokenService` service to generate an access token
+     * and a refresh token for the user provided. It then clears all existing tokens for the user,
+     * ensuring that only the newly generated tokens are valid. After clearing the old tokens,
+     * the method saves the new tokens in the database associated with the user,
+     * ensuring that they are correctly linked to the user.
+     * Finally, it returns a `ResponseDTO` object containing the values of the newly generated access
+     * and update tokens, which can be sent back to the client as part of a response to a successful
+     * authentication request. This function is crucial for ensuring that the user receives the tokens
+     * needed to securely access the application's protected resources.
+     * Generates access and refresh tokens for a specific user.
+     *
+     * @param user The user for whom the tokens are generated.
+     * @return A ResponseDTO object containing the values of the newly generated access and refresh tokens.
+     */
     public ResponseDTO generateTokenResponse(User user) {
         String accessToken = tokenService.generateAccessToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
