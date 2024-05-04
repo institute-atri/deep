@@ -1,3 +1,22 @@
 spring:
   application:
     name: deep
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+
+security:
+  token:
+    private-key: 'classpath:app.key'
+    public-key: 'classpath:app.pub'
+    expiration-token: 15
+    expiration-refresh-token: 30
+
+
+admin:
+  password: '@Admin23k+'
+user:
+  password: '@User23k+'
