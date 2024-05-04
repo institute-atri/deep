@@ -1,16 +1,15 @@
 package org.instituteatri.deep.domain.token;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.instituteatri.deep.domain.user.User;
 
 
 @Data
 @Builder
 @Entity
+@Getter
+@Setter
 @Table(name = "tb_tokens")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,18 +17,18 @@ public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    public String id;
+    private String id;
 
     @Column(length = 527)
-    public String tokenValue;
+    private String tokenValue;
 
     @Enumerated(EnumType.STRING)
-    public TokenType tokenType = TokenType.BEARER;
+    private TokenType tokenType = TokenType.BEARER;
 
-    public boolean revoked;
+    private boolean tokenRevoked;
 
-    public boolean expired;
+    private boolean tokenExpired;
 
     @ManyToOne
-    public User user;
+    private User user;
 }
