@@ -1,4 +1,5 @@
 package org.instituteatri.deep.domain.token;
 
-public class TokenType {
+public enum TokenType {
+    BEARER
 }
