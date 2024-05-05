@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.4</version> <!-- Spring Boot version -->
+        <version>3.2.5</version> <!-- Spring Boot version -->
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -69,7 +69,11 @@
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+            <version>3.1.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
