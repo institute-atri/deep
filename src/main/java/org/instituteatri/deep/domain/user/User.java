@@ -43,7 +43,7 @@ public class User implements UserDetails {
     private UserRole role;
 
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens = new ArrayList<>();
+    private transient List<Token> tokens = new ArrayList<>();
 
     public User(String name, String email, String password, boolean isEnable, UserRole role) {
         this.name = name;
