@@ -18,6 +18,11 @@ public class UserGlobalExceptionHandler {
 
     private static final String MESSAGE_KEY = "message";
 
+    @ExceptionHandler(UserEmailNotFoundException.class)
+    public ResponseEntity<Object> handleUserNotFoundException(UserEmailNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonMap(MESSAGE_KEY, ex.getMessage()));
+    }
+
     @ExceptionHandler(TokenGenerationException.class)
     public ResponseEntity<Object> handleTokenGenerationException(TokenGenerationException ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap(MESSAGE_KEY, ex.getMessage()));
