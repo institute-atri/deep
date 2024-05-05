@@ -20,6 +20,8 @@
     <properties>
         <java.version>21</java.version>
         <spring-ai.version>0.8.1</spring-ai.version>
+        <sonar.organization>institute-atri</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
