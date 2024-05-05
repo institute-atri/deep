@@ -1,6 +1,5 @@
 package org.instituteatri.deep.service;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.instituteatri.deep.domain.user.User;
@@ -9,12 +8,14 @@ import org.instituteatri.deep.dtos.user.AuthenticationDTO;
 import org.instituteatri.deep.dtos.user.RefreshTokenDTO;
 import org.instituteatri.deep.dtos.user.RegisterDTO;
 import org.instituteatri.deep.dtos.user.ResponseDTO;
+import org.instituteatri.deep.infrastructure.exceptions.user.AccountLockedException;
 import org.instituteatri.deep.infrastructure.exceptions.user.EmailAlreadyExistsException;
-import org.instituteatri.deep.infrastructure.exceptions.user.PasswordsNotMatchException;
+import org.instituteatri.deep.infrastructure.exceptions.user.UserEmailNotFoundException;
 import org.instituteatri.deep.infrastructure.security.TokenService;
 import org.instituteatri.deep.repositories.UserRepository;
-import org.instituteatri.deep.service.components.authcomponents.AccountLoginComponent;
-import org.instituteatri.deep.service.components.authcomponents.AccountTokenComponent;
+import org.instituteatri.deep.service.strategy.interfaces.AccountLoginManager;
+import org.instituteatri.deep.service.strategy.interfaces.AuthenticationTokenManager;
+import org.instituteatri.deep.service.strategy.interfaces.PasswordValidationStrategy;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,8 +36,9 @@ public class AccountService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
-    private final AccountTokenComponent accountTokenComponent;
-    private final AccountLoginComponent accountLoginComponent;
+    private final AuthenticationTokenManager authTokenManager;
+    private final AccountLoginManager accountLoginManager;
+    private final PasswordValidationStrategy passwordValidationStrategy;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -46,22 +48,22 @@ public class AccountService implements UserDetailsService {
     public ResponseEntity<ResponseDTO> loginAccount(AuthenticationDTO authDto, AuthenticationManager authManager) {
 
         try {
-            var authResult = accountLoginComponent.authenticateUserComponent(authDto, authManager);
+            var authResult = accountLoginManager.authenticateUserComponent(authDto, authManager);
             var user = (User) authResult.getPrincipal();
 
-            accountLoginComponent.handleSuccessfulLoginComponent(user);
-            accountTokenComponent.revokeAllUserTokens(user);
+            accountLoginManager.handleSuccessfulLoginComponent(user);
+            authTokenManager.revokeAllUserTokens(user);
 
             log.info("[USER_AUTHENTICATED] User: {} successfully authenticated.", user.getUsername());
-            return ResponseEntity.ok(accountTokenComponent.generateTokenResponse(user));
+            return ResponseEntity.ok(authTokenManager.generateTokenResponse(user));
 
         } catch (LockedException e) {
             log.warn("[USER_LOCKED] User account locked: {}", authDto.email());
-            return accountLoginComponent.handleLockedAccountComponent();
+            throw new AccountLockedException();
 
         } catch (BadCredentialsException e) {
             log.warn("[USER_LOGIN_FAILED] Failed login attempt with email: {}", authDto.email());
-            return accountLoginComponent.handleBadCredentialsComponent(authDto.email());
+            return accountLoginManager.handleBadCredentialsComponent(authDto.email());
         }
     }
 
@@ -72,11 +74,9 @@ public class AccountService implements UserDetailsService {
             throw new EmailAlreadyExistsException();
         }
 
-        if (!registerDTO.password().equals(registerDTO.confirmPassword())) {
-            log.warn("[PASSWORDS_NOT_MATCH] Passwords do not match for email: {}", registerDTO.email());
-            throw new PasswordsNotMatchException();
-        }
-        User newUser = createUser(registerDTO);
+        passwordValidationStrategy.validate(registerDTO.password(), registerDTO.confirmPassword());
+
+        User newUser = buildUserFromRegistrationDto(registerDTO);
         User savedUser = userRepository.save(newUser);
 
         URI uri = ServletUriComponentsBuilder
@@ -86,31 +86,32 @@ public class AccountService implements UserDetailsService {
                 .toUri();
 
         log.info("[USER_REGISTERED] User registered successfully: {}", savedUser.getEmail());
-        return ResponseEntity.created(uri).body(accountTokenComponent.generateTokenResponse(savedUser));
+        return ResponseEntity.created(uri).body(authTokenManager.generateTokenResponse(savedUser));
     }
 
     public ResponseEntity<ResponseDTO> refreshToken(RefreshTokenDTO refreshTokenDTO) {
-        try {
-            String userEmail = tokenService.validateToken(refreshTokenDTO.refreshToken());
-            UserDetails userDetails = loadUserByUsername(userEmail);
 
-            var user = (User) userDetails;
-            accountTokenComponent.revokeAllUserTokens(user);
+        String userEmail = tokenService.validateToken(refreshTokenDTO.refreshToken());
 
-            log.info("[TOKEN_REFRESHED] Token refreshed successfully for user: {}", user.getEmail());
-            return ResponseEntity.ok(accountTokenComponent.generateTokenResponse(user));
-
-        } catch (Exception e) {
-            log.error("[TOKEN_REFRESH_FAILED] Error processing token refresh request: {}", e.getMessage());
-            return ResponseEntity.status(HttpServletResponse.SC_INTERNAL_SERVER_ERROR).build();
+        if (userEmail == null || userEmail.isEmpty()) {
+            log.error("[TOKEN_REFRESH_FAILED] Invalid user email found in token.");
+            throw new UserEmailNotFoundException();
         }
+
+        UserDetails userDetails = loadUserByUsername(userEmail);
+
+        var user = (User) userDetails;
+        authTokenManager.revokeAllUserTokens(user);
+
+        log.info("[TOKEN_REFRESHED] Token refreshed successfully for user: {}", user.getEmail());
+        return ResponseEntity.ok(authTokenManager.generateTokenResponse(user));
     }
 
     private boolean isEmailExists(String email) {
         return loadUserByUsername(email) != null;
     }
 
-    private User createUser(RegisterDTO registerDTO) {
+    private User buildUserFromRegistrationDto(RegisterDTO registerDTO) {
         String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
         return new User(
                 registerDTO.name(),
