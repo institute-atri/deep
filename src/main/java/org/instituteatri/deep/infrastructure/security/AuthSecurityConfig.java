@@ -15,6 +15,7 @@ public class AuthSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurit
                 .requestMatchers(HttpMethod.POST, "/v1/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/v1/auth/register").permitAll()
                 .requestMatchers(HttpMethod.POST, "/v1/auth/refresh-token").permitAll()
+                .requestMatchers(HttpMethod.GET, "/v1/auth/csrf-token").permitAll()
         );
     }
 }
