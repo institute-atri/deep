@@ -30,38 +30,38 @@ public class Case {
     @JsonIgnore
     private List<Defendant> defendant = new ArrayList<>();
 
-    private Adress adress;
+    private Address address;
 
     private String processNumber;
     private String expertReports;
 
-    public Case(CaseDto newCase) {
-        this.typeOfCrime = newCase.typeOfCrime();
-        this.date = newCase.date();
-        this.defendant.add(newCase.defendant());
-        this.expertReports = newCase.expertReports();
-        this.processNumber = newCase.processNumber();
-        this.adress = newCase.defendant().getAdress();
+    public Case(CaseDto inquiry) {
+        this.typeOfCrime = inquiry.typeOfCrime();
+        this.date = inquiry.date();
+        this.defendant.add(inquiry.defendant());
+        this.expertReports = inquiry.expertReports();
+        this.processNumber = inquiry.processNumber();
+        this.address = inquiry.defendant().getAddress();
     }
 
-    public void updateCase(CaseDto newCase) {
-        if(newCase.typeOfCrime() != null){
-            this.typeOfCrime = newCase.typeOfCrime();
+    public void updateCase(CaseDto inquiry) {
+        if(inquiry.typeOfCrime() != null){
+            this.typeOfCrime = inquiry.typeOfCrime();
         }
-        if(newCase.date() != null){
-            this.date = newCase.date();
+        if(inquiry.date() != null){
+            this.date = inquiry.date();
         }
-        if(newCase.defendant() != null){
-            this.defendant.add(newCase.defendant());
+        if(inquiry.defendant() != null){
+            this.defendant.add(inquiry.defendant());
         }
-        if(newCase.defendant() != null){
-            this.adress = newCase.defendant().getAdress();
+        if(inquiry.defendant() != null){
+            this.address = inquiry.defendant().getAddress();
         }
-        if(newCase.processNumber() != null){
-            this.processNumber = newCase.processNumber();
+        if(inquiry.processNumber() != null){
+            this.processNumber = inquiry.processNumber();
         }
-        if(newCase.expertReports() != null){
-            this.expertReports = newCase.expertReports();
+        if(inquiry.expertReports() != null){
+            this.expertReports = inquiry.expertReports();
         }
     }
 }

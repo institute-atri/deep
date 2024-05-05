@@ -24,7 +24,7 @@ public class Defendant {
     private String idNumber;
 
     @Embedded
-    private Adress adress;
+    private Address address;
 
     @ManyToMany(mappedBy = "defendant")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
