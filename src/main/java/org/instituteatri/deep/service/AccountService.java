@@ -25,7 +25,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
@@ -78,9 +78,9 @@ public class AccountService implements UserDetailsService {
 
         User newUser = buildUserFromRegistrationDto(registerDTO);
         User savedUser = userRepository.save(newUser);
+        String baseUri = "http://localhost:8080";
 
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
+        URI uri = UriComponentsBuilder.fromUriString(baseUri)
                 .path("/{id}")
                 .buildAndExpand(savedUser.getId())
                 .toUri();
