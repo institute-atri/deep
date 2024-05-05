@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +33,7 @@ public class SecurityConfigurations {
         applyUserSecurityConfig(httpSecurity);
 
         return httpSecurity
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .csrf(csrf -> csrf.csrfTokenRepository(customizeCookieCsrfTokenRepository()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
@@ -41,6 +42,7 @@ public class SecurityConfigurations {
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()))
                 .build();
+
     }
 
     @Bean
@@ -60,6 +62,16 @@ public class SecurityConfigurations {
 
     private void applyUserSecurityConfig(HttpSecurity http) throws Exception {
         userSecurityConfig.configure(http);
+    }
+    private CsrfTokenRepository customizeCookieCsrfTokenRepository() {
+        CookieCsrfTokenRepository tokenRepository = new CookieCsrfTokenRepository();
+        tokenRepository.setCookieCustomizer(builder ->
+                builder
+                        .httpOnly(true)
+                        .sameSite("None")
+                        .secure(true)
+        );
+        return tokenRepository;
     }
 }
 
