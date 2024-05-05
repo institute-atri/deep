@@ -13,10 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/auth")
@@ -45,5 +43,9 @@ public class AuthenticationController {
     @PostMapping("/refresh-token")
     public ResponseEntity<ResponseDTO> refreshToken(@RequestBody RefreshTokenDTO tokenDTO) {
         return accountService.refreshToken(tokenDTO);
+    }
+    @GetMapping("/csrf-token")
+    public CsrfToken csrf(HttpServletRequest request) {
+        return (CsrfToken) request.getAttribute(CsrfToken.class.getName());
     }
 }
