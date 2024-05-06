@@ -63,10 +63,6 @@ class AccountServiceTest {
     }
 
     @Test
-    void loadUserByUsername() {
-    }
-
-    @Test
     void loginAccount_Success() {
         // Arrange
         AuthenticationDTO authDto = new AuthenticationDTO(emailTest, passwordTest);
@@ -144,7 +140,7 @@ class AccountServiceTest {
     }
 
     @Test
-    public void testRefreshToken() {
+    void testRefreshToken() {
         // Given
         String email = "refreshToken@test.com";
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO("testToken");
