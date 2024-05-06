@@ -1,4 +1,4 @@
-package org.instituteatri.deep.infrastructure.exceptions.user;
+package org.instituteatri.deep.exception.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

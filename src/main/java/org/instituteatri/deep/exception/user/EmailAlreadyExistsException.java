@@ -1,4 +1,4 @@
-package org.instituteatri.deep.infrastructure.exceptions.user;
+package org.instituteatri.deep.exception.user;
 
 public class EmailAlreadyExistsException  extends RuntimeException {
     public EmailAlreadyExistsException() {

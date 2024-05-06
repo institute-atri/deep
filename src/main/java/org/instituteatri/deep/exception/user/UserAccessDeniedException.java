@@ -1,4 +1,4 @@
-package org.instituteatri.deep.infrastructure.exceptions.user;
+package org.instituteatri.deep.exception.user;
 
 public class UserAccessDeniedException extends RuntimeException {
     public UserAccessDeniedException() {
