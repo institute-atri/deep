@@ -1,9 +1,9 @@
-package org.instituteatri.deep.repositories;
+package org.instituteatri.deep.repository;
 
 import jakarta.persistence.EntityManager;
 import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.model.user.UserRole;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,15 +33,15 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Should get user successfully from database")
     void findByEmailSuccess() {
-        RegisterDTO registerDTO = new RegisterDTO(
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
                 "John",
                 emailTest,
                 passwordTest,
                 passwordTest);
-        this.createUser(registerDTO);
+        this.createUser(registerRequestDTO);
 
-        User result = (User) this.userRepository.findByEmail(registerDTO.email());
-        assertThat(result.getEmail()).isEqualTo(registerDTO.email());
+        User result = (User) this.userRepository.findByEmail(registerRequestDTO.email());
+        assertThat(result.getEmail()).isEqualTo(registerRequestDTO.email());
     }
 
     @Test
@@ -58,11 +58,11 @@ class UserRepositoryTest {
     }
 
 
-    private void createUser(RegisterDTO registerDTO) {
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
+    private void createUser(RegisterRequestDTO registerRequestDTO) {
+        String encryptedPassword = new BCryptPasswordEncoder().encode(registerRequestDTO.password());
         User newUser = new User(
-                registerDTO.name(),
-                registerDTO.email(),
+                registerRequestDTO.name(),
+                registerRequestDTO.email(),
                 encryptedPassword,
                 true,
                 UserRole.USER

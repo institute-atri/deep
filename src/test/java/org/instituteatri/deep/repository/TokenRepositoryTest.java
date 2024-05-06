@@ -1,10 +1,10 @@
-package org.instituteatri.deep.repositories;
+package org.instituteatri.deep.repository;
 
 import jakarta.persistence.EntityManager;
 import org.instituteatri.deep.model.token.Token;
 import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.model.user.UserRole;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
 import org.instituteatri.deep.service.strategy.implstrategy.TokenManagerImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -118,13 +118,13 @@ class TokenRepositoryTest {
     @DisplayName("Should delete tokens associated with a user from the database")
     void deleteTokensByUser() {
         // Given
-        RegisterDTO registerDTO = new RegisterDTO(
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
                 "Test",
                 emailTest,
                 passwordTest,
                 passwordTest
         );
-        User existingUser = createUser(registerDTO);
+        User existingUser = createUser(registerRequestDTO);
         mockDeleteTokensByUser(existingUser);
 
         // When
@@ -152,11 +152,11 @@ class TokenRepositoryTest {
         when(tokenRepository.findAllValidTokenByUser(anyString())).thenReturn(Collections.emptyList());
     }
 
-    private User createUser(RegisterDTO registerDTO) {
+    private User createUser(RegisterRequestDTO registerRequestDTO) {
         return new User(
-                registerDTO.name(),
-                registerDTO.email(),
-                new BCryptPasswordEncoder().encode(registerDTO.password()),
+                registerRequestDTO.name(),
+                registerRequestDTO.email(),
+                new BCryptPasswordEncoder().encode(registerRequestDTO.password()),
                 true,
                 UserRole.USER
         );
