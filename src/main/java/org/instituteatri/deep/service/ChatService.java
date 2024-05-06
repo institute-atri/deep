@@ -32,7 +32,9 @@ public class ChatService {
             Message msg = Message.builder(x.getRole()).withContent(x.getContent()).build();
             messages.add(msg);
         });
-        messages.add(Message.builder(Message.Role.USER).withContent(request.getMessage()).build());
+        Message msg = Message.builder(Message.Role.USER).withContent(request.getMessage()).build();
+        messages.add(msg);
+        messageService.save(msg, occurrenceId);
         OllamaApi.ChatRequest build =
                 OllamaApi.ChatRequest.builder(model).withMessages(messages).build();
         ChatResponse response = new OllamaApi().chat(build);

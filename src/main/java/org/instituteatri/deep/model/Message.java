@@ -2,6 +2,7 @@ package org.instituteatri.deep.model;
 
 import java.time.Instant;
 import org.springframework.ai.ollama.api.OllamaApi.Message.Role;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -30,6 +31,7 @@ public class Message {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @Column(columnDefinition = "TEXT")
     private String content;
     private Instant createdAt;
 

@@ -1,6 +1,7 @@
 package org.instituteatri.deep.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,5 +32,5 @@ public class Occurrence {
     private Instant updatedAt;
 
     @OneToMany(mappedBy = "occurrence")
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
 }

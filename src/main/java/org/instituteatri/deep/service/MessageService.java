@@ -18,8 +18,8 @@ public class MessageService {
     private final ModelMapper modelMapper;
 
     public void save(Message request, String occurrenceId) {
-        org.instituteatri.deep.model.Message msg =
-                modelMapper.map(request, org.instituteatri.deep.model.Message.class);
+        org.instituteatri.deep.model.Message msg = org.instituteatri.deep.model.Message.builder()
+                .content(request.content()).role(request.role()).build();
         OccurrenceResponseDTO responseDTO = occurrenceService.getById(occurrenceId);
         Occurrence occurrence = modelMapper.map(responseDTO, Occurrence.class);
         msg.setOccurrence(occurrence);
