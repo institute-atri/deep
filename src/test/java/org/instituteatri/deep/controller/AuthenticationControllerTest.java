@@ -1,10 +1,10 @@
 package org.instituteatri.deep.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.instituteatri.deep.dtos.user.AuthenticationDTO;
-import org.instituteatri.deep.dtos.user.RefreshTokenDTO;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
+import org.instituteatri.deep.dto.request.LoginRequestDTO;
+import org.instituteatri.deep.dto.request.RefreshTokenRequestDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.service.AccountService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,11 +44,11 @@ class AuthenticationControllerTest {
     @Test
     void getLogin_WithValidCredentials_ReturnsResponseEntityWithStatus200() throws Exception {
         // Given
-        AuthenticationDTO authDto = new AuthenticationDTO("username", "password");
-        ResponseEntity<ResponseDTO> expectedResponse = new ResponseEntity<>(new ResponseDTO("token", "refreshToken"), HttpStatus.OK);
+        LoginRequestDTO authDto = new LoginRequestDTO("username", "password");
+        ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(new TokenResponseDTO("token", "refreshToken"), HttpStatus.OK);
 
         // When
-        when(accountService.loginAccount(any(AuthenticationDTO.class), any(AuthenticationManager.class))).thenReturn(expectedResponse);
+        when(accountService.loginAccount(any(LoginRequestDTO.class), any(AuthenticationManager.class))).thenReturn(expectedResponse);
 
         // Then
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/login")
@@ -60,17 +60,17 @@ class AuthenticationControllerTest {
     @Test
     void register_WithValidRegisterDTO_ReturnsResponseEntityWithStatus201() {
         // Given
-        RegisterDTO registerDTO = new RegisterDTO(
+        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
                 "Test User",
                 "test@example.com",
                 "Password123+",
                 "Password123+");
 
-        ResponseEntity<ResponseDTO> expectedResponse = new ResponseEntity<>(HttpStatus.CREATED);
-        when(accountService.registerAccount(any(RegisterDTO.class))).thenReturn(expectedResponse);
+        ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(HttpStatus.CREATED);
+        when(accountService.registerAccount(any(RegisterRequestDTO.class))).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<ResponseDTO> actualResponse = authenticationController.register(registerDTO);
+        ResponseEntity<TokenResponseDTO> actualResponse = authenticationController.register(registerRequestDTO);
 
         // Then
         assertEquals(HttpStatus.CREATED, actualResponse.getStatusCode());
@@ -86,12 +86,12 @@ class AuthenticationControllerTest {
     @Test
     void refreshToken_WithValidRefreshToken_ReturnsResponseEntityWithStatus200() {
         // Given
-        RefreshTokenDTO tokenDTO = new RefreshTokenDTO("newToken");
-        ResponseEntity<ResponseDTO> expectedResponse = new ResponseEntity<>(new ResponseDTO("newToken", "newRefreshToken"), HttpStatus.OK);
-        when(accountService.refreshToken(any(RefreshTokenDTO.class))).thenReturn(expectedResponse);
+        RefreshTokenRequestDTO tokenDTO = new RefreshTokenRequestDTO("newToken");
+        ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(new TokenResponseDTO("newToken", "newRefreshToken"), HttpStatus.OK);
+        when(accountService.refreshToken(any(RefreshTokenRequestDTO.class))).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<ResponseDTO> responseEntity = authenticationController.refreshToken(tokenDTO);
+        ResponseEntity<TokenResponseDTO> responseEntity = authenticationController.refreshToken(tokenDTO);
 
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

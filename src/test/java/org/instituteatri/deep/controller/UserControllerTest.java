@@ -1,8 +1,8 @@
 package org.instituteatri.deep.controller;
 
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
-import org.instituteatri.deep.dtos.user.UserDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
+import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,7 +29,7 @@ class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    private final RegisterDTO registerDTO = new RegisterDTO(
+    private final RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
             "Test User",
             "test@example.com",
             "Password123+",
@@ -41,15 +41,15 @@ class UserControllerTest {
     @Test
     void getAllUsers_WhenServiceReturnsMultipleUsers_ReturnsListOfUsers() {
         // Given
-        List<UserDTO> expectedUsers = Arrays.asList(
-                new UserDTO("testId1", "testName1", "testEmail1@example.com"),
-                new UserDTO("testId2", "testName2", "testEmail2@example.com")
+        List<UserResponseDTO> expectedUsers = Arrays.asList(
+                new UserResponseDTO("testId1", "testName1", "testEmail1@example.com"),
+                new UserResponseDTO("testId2", "testName2", "testEmail2@example.com")
         );
-        ResponseEntity<List<UserDTO>> expectedResponse = ResponseEntity.ok(expectedUsers);
+        ResponseEntity<List<UserResponseDTO>> expectedResponse = ResponseEntity.ok(expectedUsers);
         when(userService.getAllUsers()).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<List<UserDTO>> result = userController.getAllUsers();
+        ResponseEntity<List<UserResponseDTO>> result = userController.getAllUsers();
 
         // Then
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -60,12 +60,12 @@ class UserControllerTest {
     @Test
     void testGetAllUsers_WhenServiceReturnsEmptyList_ShouldReturnEmptyList() {
         // Given
-        List<UserDTO> expectedUsers = Collections.emptyList();
-        ResponseEntity<List<UserDTO>> expectedResponse = ResponseEntity.ok(expectedUsers);
+        List<UserResponseDTO> expectedUsers = Collections.emptyList();
+        ResponseEntity<List<UserResponseDTO>> expectedResponse = ResponseEntity.ok(expectedUsers);
         when(userService.getAllUsers()).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<List<UserDTO>> result = userController.getAllUsers();
+        ResponseEntity<List<UserResponseDTO>> result = userController.getAllUsers();
 
         // Then
         assertEquals(HttpStatus.OK, result.getStatusCode());
@@ -78,11 +78,11 @@ class UserControllerTest {
     void testGetUserById_WhenValidId_ThenReturnUser() {
         // Given
         String userId = "testId1";
-        UserDTO expectedUser = new UserDTO(userId, "testName1", "testEmail1@example.com");
+        UserResponseDTO expectedUser = new UserResponseDTO(userId, "testName1", "testEmail1@example.com");
         when(userService.getByUserId(userId)).thenReturn(expectedUser);
 
         // When
-        ResponseEntity<UserDTO> response = userController.getByUserId(userId);
+        ResponseEntity<UserResponseDTO> response = userController.getByUserId(userId);
 
         // Then
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -93,11 +93,11 @@ class UserControllerTest {
     @Test
     void updateUser_WhenValidRequest_ThenReturnUpdatedUser() {
         // Given
-        ResponseEntity<ResponseDTO> expectedResponse = ResponseEntity.ok().body(new ResponseDTO("Token", "RefreshToken"));
-        when(userService.updateUser(id, registerDTO, authentication)).thenReturn(expectedResponse);
+        ResponseEntity<TokenResponseDTO> expectedResponse = ResponseEntity.ok().body(new TokenResponseDTO("Token", "RefreshToken"));
+        when(userService.updateUser(id, registerRequestDTO, authentication)).thenReturn(expectedResponse);
 
         // When
-        ResponseEntity<ResponseDTO> responseEntity = userController.updateUser(id, registerDTO, authentication);
+        ResponseEntity<TokenResponseDTO> responseEntity = userController.updateUser(id, registerRequestDTO, authentication);
 
         // Then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
