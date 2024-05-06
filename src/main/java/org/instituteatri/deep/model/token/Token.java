@@ -1,8 +1,8 @@
-package org.instituteatri.deep.domain.token;
+package org.instituteatri.deep.model.token;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.instituteatri.deep.domain.user.User;
+import org.instituteatri.deep.model.user.User;
 
 
 @Data

@@ -1,4 +1,4 @@
-package org.instituteatri.deep.domain.user;
+package org.instituteatri.deep.model.user;
 
 import lombok.Getter;
 

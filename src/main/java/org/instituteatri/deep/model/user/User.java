@@ -1,11 +1,11 @@
-package org.instituteatri.deep.domain.user;
+package org.instituteatri.deep.model.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.instituteatri.deep.domain.token.Token;
+import org.instituteatri.deep.model.token.Token;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
