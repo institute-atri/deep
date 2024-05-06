@@ -7,10 +7,10 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.instituteatri.deep.domain.token.Token;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.infrastructure.exceptions.user.TokenGenerationException;
-import org.instituteatri.deep.repositories.TokenRepository;
+import org.instituteatri.deep.model.token.Token;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.exception.user.TokenGenerationException;
+import org.instituteatri.deep.repository.TokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
