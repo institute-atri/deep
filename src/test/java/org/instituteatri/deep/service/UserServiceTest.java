@@ -1,13 +1,13 @@
 package org.instituteatri.deep.service;
 
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
-import org.instituteatri.deep.dtos.user.UserDTO;
-import org.instituteatri.deep.infrastructure.exceptions.user.UserNotFoundException;
-import org.instituteatri.deep.mappings.UserMapper;
-import org.instituteatri.deep.repositories.TokenRepository;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
+import org.instituteatri.deep.dto.response.UserResponseDTO;
+import org.instituteatri.deep.exception.user.UserNotFoundException;
+import org.instituteatri.deep.mapper.UserMapper;
+import org.instituteatri.deep.repository.TokenRepository;
+import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,7 +74,7 @@ class UserServiceTest {
 
         // Act
         when(userRepository.findAll()).thenReturn(users);
-        ResponseEntity<List<UserDTO>> response = userService.getAllUsers();
+        ResponseEntity<List<UserResponseDTO>> response = userService.getAllUsers();
 
         // Assert
         assertNotNull(response);
@@ -90,19 +90,19 @@ class UserServiceTest {
     void getByUserId_UserExists_ReturnsUserDTO() {
         // Arrange
         User mockUser = new User();
-        UserDTO mockUserDTO = new UserDTO(
+        UserResponseDTO mockUserResponseDTO = new UserResponseDTO(
                 userId,
                 userName,
                 emailTest);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
-        when(userMapper.toUserDto(mockUser)).thenReturn(mockUserDTO);
+        when(userMapper.toUserDto(mockUser)).thenReturn(mockUserResponseDTO);
 
         // Act
-        UserDTO result = userService.getByUserId(userId);
+        UserResponseDTO result = userService.getByUserId(userId);
 
         // Assert
-        assertEquals(mockUserDTO, result);
+        assertEquals(mockUserResponseDTO, result);
     }
 
     @Test
@@ -147,18 +147,18 @@ class UserServiceTest {
     void updateUser_Success() {
         User existingUser = new User();
         existingUser.setId(userId);
-        RegisterDTO updatedUserDto = new RegisterDTO(
+        RegisterRequestDTO updatedUserDto = new RegisterRequestDTO(
                 "newName",
                 "newEmail@example.com",
                 "@newPassword1+",
                 "@newPassword1+");
 
-        ResponseDTO expectedResponse = new ResponseDTO("Token", "RefreshToken");
+        TokenResponseDTO expectedResponse = new TokenResponseDTO("Token", "refreshToken");
 
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(existingUser));
         when(authTokenManager.generateTokenResponse(existingUser)).thenReturn(expectedResponse);
 
-        ResponseEntity<ResponseDTO> response = userService.updateUser(userId, updatedUserDto, authentication);
+        ResponseEntity<TokenResponseDTO> response = userService.updateUser(userId, updatedUserDto, authentication);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -171,9 +171,9 @@ class UserServiceTest {
         User user = new User();
         user.setId(userId);
 
-        UserDTO userDTO = new UserDTO(userId, userName, emailTest);
+        UserResponseDTO userResponseDTO = new UserResponseDTO(userId, userName, emailTest);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userMapper.toUserDto(user)).thenReturn(userDTO);
+        when(userMapper.toUserDto(user)).thenReturn(userResponseDTO);
     }
 }

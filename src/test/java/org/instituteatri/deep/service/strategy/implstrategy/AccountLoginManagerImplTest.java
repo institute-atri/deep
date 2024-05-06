@@ -1,9 +1,9 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.domain.user.UserRole;
-import org.instituteatri.deep.infrastructure.exceptions.user.CustomAuthenticationException;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.model.user.UserRole;
+import org.instituteatri.deep.exception.user.CustomAuthenticationException;
+import org.instituteatri.deep.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

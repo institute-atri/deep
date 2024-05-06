@@ -1,13 +1,13 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
-import org.instituteatri.deep.domain.token.Token;
-import org.instituteatri.deep.domain.token.TokenType;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.domain.user.UserRole;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
+import org.instituteatri.deep.model.token.Token;
+import org.instituteatri.deep.model.token.TokenType;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.model.user.UserRole;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.infrastructure.security.TokenService;
-import org.instituteatri.deep.repositories.TokenRepository;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.repository.TokenRepository;
+import org.instituteatri.deep.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -67,11 +67,11 @@ class TokenManagerImplTest {
         when(tokenRepository.save(any(Token.class))).thenReturn(accessToken, refreshToken);
 
         // Act
-        ResponseDTO responseDTO = tokenManager.generateTokenResponse(user);
+        TokenResponseDTO tokenResponseDTO = tokenManager.generateTokenResponse(user);
 
         // Assert
-        assertEquals(genAccessToken, responseDTO.token());
-        assertEquals(genRefreshToken, responseDTO.refreshToken());
+        assertEquals(genAccessToken, tokenResponseDTO.token());
+        assertEquals(genRefreshToken, tokenResponseDTO.refreshToken());
     }
 
     @Test
