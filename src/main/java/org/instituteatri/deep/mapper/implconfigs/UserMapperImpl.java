@@ -1,8 +1,8 @@
-package org.instituteatri.deep.mappings.implconfigs;
+package org.instituteatri.deep.mapper.implconfigs;
 
 import org.instituteatri.deep.model.user.User;
-import org.instituteatri.deep.dtos.user.UserDTO;
-import org.instituteatri.deep.mappings.UserMapper;
+import org.instituteatri.deep.dto.response.UserResponseDTO;
+import org.instituteatri.deep.mapper.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class UserMapperImpl implements UserMapper {
 
     @Override
-    public UserDTO toUserDto(User user) {
-        return new UserDTO(
+    public UserResponseDTO toUserDto(User user) {
+        return new UserResponseDTO(
                 user.getId(),
                 user.getName(),
                 user.getEmail());

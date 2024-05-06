@@ -1,7 +1,7 @@
-package org.instituteatri.deep.mappings;
+package org.instituteatri.deep.mapper;
 
 import org.instituteatri.deep.model.user.User;
-import org.instituteatri.deep.dtos.user.UserDTO;
+import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MapperConfig;
 import org.mapstruct.ReportingPolicy;
@@ -9,5 +9,5 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring")
 @MapperConfig(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
-    UserDTO toUserDto(User user);
+    UserResponseDTO toUserDto(User user);
 }
