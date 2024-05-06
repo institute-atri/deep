@@ -1,6 +1,6 @@
 package org.instituteatri.deep.repositories;
 
-import org.instituteatri.deep.domain.user.User;
+import org.instituteatri.deep.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;

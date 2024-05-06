@@ -1,9 +1,9 @@
 package org.instituteatri.deep.repositories;
 
 import jakarta.persistence.EntityManager;
-import org.instituteatri.deep.domain.token.Token;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.domain.user.UserRole;
+import org.instituteatri.deep.model.token.Token;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.model.user.UserRole;
 import org.instituteatri.deep.dtos.user.RegisterDTO;
 import org.instituteatri.deep.service.strategy.implstrategy.TokenManagerImpl;
 import org.junit.jupiter.api.DisplayName;

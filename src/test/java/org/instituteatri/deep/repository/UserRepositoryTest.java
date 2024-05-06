@@ -1,8 +1,8 @@
 package org.instituteatri.deep.repositories;
 
 import jakarta.persistence.EntityManager;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.domain.user.UserRole;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.model.user.UserRole;
 import org.instituteatri.deep.dtos.user.RegisterDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

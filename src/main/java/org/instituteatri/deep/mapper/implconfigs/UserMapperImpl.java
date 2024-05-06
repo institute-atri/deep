@@ -1,6 +1,6 @@
 package org.instituteatri.deep.mappings.implconfigs;
 
-import org.instituteatri.deep.domain.user.User;
+import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.dtos.user.UserDTO;
 import org.instituteatri.deep.mappings.UserMapper;
 import org.mapstruct.Mapper;
