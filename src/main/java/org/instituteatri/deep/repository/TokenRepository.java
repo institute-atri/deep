@@ -1,4 +1,4 @@
-package org.instituteatri.deep.repositories;
+package org.instituteatri.deep.repository;
 
 import org.instituteatri.deep.model.token.Token;
 import org.instituteatri.deep.model.user.User;
