@@ -52,14 +52,14 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
         return new ResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
     }
 
-    private void clearTokens(String userId) {
+    public void clearTokens(String userId) {
         var tokens = tokenRepository.findAllByUserId(userId);
         if (!tokens.isEmpty()) {
             tokenRepository.deleteAll(tokens);
         }
     }
 
-    private Token saveUserToken(User user, String jwtToken) {
+    public Token saveUserToken(User user, String jwtToken) {
         var token = Token.builder()
                 .user(user)
                 .tokenValue(jwtToken)
