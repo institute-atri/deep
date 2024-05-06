@@ -1,4 +1,4 @@
-package org.instituteatri.deep.dtos.response;
+package org.instituteatri.deep.dto.response;
 
-public record ResponseTokenDTO(String token, String refreshToken) {
+public record TokenResponseDTO(String token, String refreshToken) {
 }

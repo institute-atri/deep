@@ -1,6 +1,6 @@
-package org.instituteatri.deep.dtos.user;
+package org.instituteatri.deep.dto.response;
 
-public record UserDTO(
+public record UserResponseDTO(
         String id,
         String name,
         String email) {
