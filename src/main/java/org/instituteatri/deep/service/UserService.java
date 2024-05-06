@@ -1,14 +1,14 @@
 package org.instituteatri.deep.service;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
-import org.instituteatri.deep.dtos.user.UserDTO;
-import org.instituteatri.deep.infrastructure.exceptions.user.UserNotFoundException;
-import org.instituteatri.deep.mappings.UserMapper;
-import org.instituteatri.deep.repositories.TokenRepository;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
+import org.instituteatri.deep.dto.response.UserResponseDTO;
+import org.instituteatri.deep.exception.user.UserNotFoundException;
+import org.instituteatri.deep.mapper.UserMapper;
+import org.instituteatri.deep.repository.TokenRepository;
+import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -34,7 +34,7 @@ public class UserService {
     private final UserIdValidationStrategy userIdValidationStrategy;
     private final EmailAlreadyValidationStrategy emailAlreadyValidationStrategy;
 
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         return ResponseEntity.ok(users.stream()
@@ -42,7 +42,7 @@ public class UserService {
                 .toList());
     }
 
-    public UserDTO getByUserId(String id) {
+    public UserResponseDTO getByUserId(String id) {
         Optional<User> user = userRepository.findById(id);
 
         return user.map(userMapper::toUserDto).orElseThrow(()
@@ -81,7 +81,7 @@ public class UserService {
      * @return A ResponseEntity containing the ResponseDTO with the access and refresh tokens.
      */
     @Transactional
-    public ResponseEntity<ResponseDTO> updateUser(String userId, RegisterDTO updatedUserDto, Authentication authentication) {
+    public ResponseEntity<TokenResponseDTO> updateUser(String userId, RegisterRequestDTO updatedUserDto, Authentication authentication) {
 
         User existingUser = findUserByIdOrThrow(userId);
 
@@ -105,7 +105,7 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    private void updateUserProperties(User existingUser, RegisterDTO updatedUserDto) {
+    private void updateUserProperties(User existingUser, RegisterRequestDTO updatedUserDto) {
         updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
         updateField(existingUser::setEmail, existingUser.getEmail(), updatedUserDto.email());
         updatePassword(existingUser, updatedUserDto.password());
@@ -124,7 +124,7 @@ public class UserService {
         }
     }
 
-    private void validateEmailUpdate(User existingUser, RegisterDTO updatedUserDto) {
+    private void validateEmailUpdate(User existingUser, RegisterRequestDTO updatedUserDto) {
         String newEmail = updatedUserDto.email();
 
         emailAlreadyValidationStrategy.validate(

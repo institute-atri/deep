@@ -2,17 +2,17 @@ package org.instituteatri.deep.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.domain.user.UserRole;
-import org.instituteatri.deep.dtos.user.AuthenticationDTO;
-import org.instituteatri.deep.dtos.user.RefreshTokenDTO;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
-import org.instituteatri.deep.infrastructure.exceptions.user.AccountLockedException;
-import org.instituteatri.deep.infrastructure.exceptions.user.EmailAlreadyExistsException;
-import org.instituteatri.deep.infrastructure.exceptions.user.UserEmailNotFoundException;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.model.user.UserRole;
+import org.instituteatri.deep.dto.request.LoginRequestDTO;
+import org.instituteatri.deep.dto.request.RefreshTokenRequestDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
+import org.instituteatri.deep.exception.user.AccountLockedException;
+import org.instituteatri.deep.exception.user.EmailAlreadyExistsException;
+import org.instituteatri.deep.exception.user.UserEmailNotFoundException;
 import org.instituteatri.deep.infrastructure.security.TokenService;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.AccountLoginManager;
 import org.instituteatri.deep.service.strategy.interfaces.AuthenticationTokenManager;
 import org.instituteatri.deep.service.strategy.interfaces.PasswordValidationStrategy;
@@ -45,7 +45,7 @@ public class AccountService implements UserDetailsService {
         return userRepository.findByEmail(username);
     }
 
-    public ResponseEntity<ResponseDTO> loginAccount(AuthenticationDTO authDto, AuthenticationManager authManager) {
+    public ResponseEntity<TokenResponseDTO> loginAccount(LoginRequestDTO authDto, AuthenticationManager authManager) {
 
         try {
             var authResult = accountLoginManager.authenticateUserComponent(authDto, authManager);
@@ -67,16 +67,16 @@ public class AccountService implements UserDetailsService {
         }
     }
 
-    public ResponseEntity<ResponseDTO> registerAccount(RegisterDTO registerDTO) {
+    public ResponseEntity<TokenResponseDTO> registerAccount(RegisterRequestDTO registerRequestDTO) {
 
-        if (isEmailExists(registerDTO.email())) {
-            log.warn("[EMAIL_EXISTS] E-mail not available: {}", registerDTO.email());
+        if (isEmailExists(registerRequestDTO.email())) {
+            log.warn("[EMAIL_EXISTS] E-mail not available: {}", registerRequestDTO.email());
             throw new EmailAlreadyExistsException();
         }
 
-        passwordValidationStrategy.validate(registerDTO.password(), registerDTO.confirmPassword());
+        passwordValidationStrategy.validate(registerRequestDTO.password(), registerRequestDTO.confirmPassword());
 
-        User newUser = buildUserFromRegistrationDto(registerDTO);
+        User newUser = buildUserFromRegistrationDto(registerRequestDTO);
         User savedUser = userRepository.save(newUser);
         String baseUri = "http://localhost:8080";
 
@@ -89,9 +89,9 @@ public class AccountService implements UserDetailsService {
         return ResponseEntity.created(uri).body(authTokenManager.generateTokenResponse(savedUser));
     }
 
-    public ResponseEntity<ResponseDTO> refreshToken(RefreshTokenDTO refreshTokenDTO) {
+    public ResponseEntity<TokenResponseDTO> refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO) {
 
-        String userEmail = tokenService.validateToken(refreshTokenDTO.refreshToken());
+        String userEmail = tokenService.validateToken(refreshTokenRequestDTO.refreshToken());
 
         if (userEmail == null || userEmail.isEmpty()) {
             log.error("[TOKEN_REFRESH_FAILED] Invalid user email found in token.");
@@ -111,11 +111,11 @@ public class AccountService implements UserDetailsService {
         return loadUserByUsername(email) != null;
     }
 
-    private User buildUserFromRegistrationDto(RegisterDTO registerDTO) {
-        String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
+    private User buildUserFromRegistrationDto(RegisterRequestDTO registerRequestDTO) {
+        String encryptedPassword = new BCryptPasswordEncoder().encode(registerRequestDTO.password());
         return new User(
-                registerDTO.name(),
-                registerDTO.email(),
+                registerRequestDTO.name(),
+                registerRequestDTO.email(),
                 encryptedPassword,
                 true,
                 UserRole.USER

@@ -1,9 +1,9 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.infrastructure.exceptions.user.EmailAlreadyExistsException;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.exception.user.EmailAlreadyExistsException;
+import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.EmailAlreadyValidationStrategy;
 import org.springframework.stereotype.Component;
 

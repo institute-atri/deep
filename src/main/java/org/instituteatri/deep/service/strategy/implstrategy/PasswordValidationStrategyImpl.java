@@ -1,6 +1,6 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
-import org.instituteatri.deep.infrastructure.exceptions.user.PasswordsNotMatchException;
+import org.instituteatri.deep.exception.user.PasswordsNotMatchException;
 import org.instituteatri.deep.service.strategy.interfaces.PasswordValidationStrategy;
 import org.springframework.stereotype.Component;
 

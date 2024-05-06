@@ -1,7 +1,7 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.infrastructure.exceptions.user.UserAccessDeniedException;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.exception.user.UserAccessDeniedException;
 import org.instituteatri.deep.service.strategy.interfaces.UserIdValidationStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;

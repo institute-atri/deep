@@ -1,6 +1,6 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
-import org.instituteatri.deep.infrastructure.exceptions.user.NotAuthenticatedException;
+import org.instituteatri.deep.exception.user.NotAuthenticatedException;
 import org.instituteatri.deep.service.strategy.interfaces.AuthenticationValidationStrategy;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;

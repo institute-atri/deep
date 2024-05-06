@@ -1,13 +1,13 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.domain.token.Token;
-import org.instituteatri.deep.domain.token.TokenType;
-import org.instituteatri.deep.domain.user.User;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
+import org.instituteatri.deep.model.token.Token;
+import org.instituteatri.deep.model.token.TokenType;
+import org.instituteatri.deep.model.user.User;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.infrastructure.security.TokenService;
-import org.instituteatri.deep.repositories.TokenRepository;
-import org.instituteatri.deep.repositories.UserRepository;
+import org.instituteatri.deep.repository.TokenRepository;
+import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.AuthenticationTokenManager;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
      * @return A ResponseDTO object containing the values of the newly generated access and refresh tokens.
      */
     @Override
-    public ResponseDTO generateTokenResponse(User user) {
+    public TokenResponseDTO generateTokenResponse(User user) {
         String accessToken = tokenService.generateAccessToken(user);
         String refreshToken = tokenService.generateRefreshToken(user);
 
@@ -49,7 +49,7 @@ public class TokenManagerImpl implements AuthenticationTokenManager {
         user.getTokens().add(refreshTokenToken);
         userRepository.save(user);
 
-        return new ResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
+        return new TokenResponseDTO(accessTokenToken.getTokenValue(), refreshTokenToken.getTokenValue());
     }
 
     public void clearTokens(String userId) {
