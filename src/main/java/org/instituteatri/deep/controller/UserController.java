@@ -2,9 +2,9 @@ package org.instituteatri.deep.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
-import org.instituteatri.deep.dtos.user.UserDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
+import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -20,23 +20,23 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping()
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/find/{id}")
-    public ResponseEntity<UserDTO> getByUserId(@PathVariable String id) {
-        UserDTO user = userService.getByUserId(id);
+    public ResponseEntity<UserResponseDTO> getByUserId(@PathVariable String id) {
+        UserResponseDTO user = userService.getByUserId(id);
         return ResponseEntity.ok().body(user);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<ResponseDTO> updateUser(
+    public ResponseEntity<TokenResponseDTO> updateUser(
             @PathVariable String id,
-            @RequestBody @Valid RegisterDTO registerDTO,
+            @RequestBody @Valid RegisterRequestDTO registerRequestDTO,
             Authentication authentication
     ) {
-        return userService.updateUser(id, registerDTO, authentication);
+        return userService.updateUser(id, registerRequestDTO, authentication);
     }
 
     @DeleteMapping("/delete/{id}")

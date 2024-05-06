@@ -4,10 +4,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.dtos.user.AuthenticationDTO;
-import org.instituteatri.deep.dtos.user.RefreshTokenDTO;
-import org.instituteatri.deep.dtos.user.RegisterDTO;
-import org.instituteatri.deep.dtos.user.ResponseDTO;
+import org.instituteatri.deep.dto.request.LoginRequestDTO;
+import org.instituteatri.deep.dto.request.RefreshTokenRequestDTO;
+import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.service.AccountService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,13 +25,13 @@ public class AuthenticationController {
     private final AccountService accountService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDTO> getLogin(@RequestBody AuthenticationDTO authDto) {
+    public ResponseEntity<TokenResponseDTO> getLogin(@RequestBody LoginRequestDTO authDto) {
         return accountService.loginAccount(authDto, authenticationManager);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseDTO> register(@RequestBody @Valid RegisterDTO registerDTO) {
-        return accountService.registerAccount(registerDTO);
+    public ResponseEntity<TokenResponseDTO> register(@RequestBody @Valid RegisterRequestDTO registerRequestDTO) {
+        return accountService.registerAccount(registerRequestDTO);
     }
 
     @PostMapping("/logout")
@@ -41,7 +41,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<ResponseDTO> refreshToken(@RequestBody RefreshTokenDTO tokenDTO) {
+    public ResponseEntity<TokenResponseDTO> refreshToken(@RequestBody RefreshTokenRequestDTO tokenDTO) {
         return accountService.refreshToken(tokenDTO);
     }
     @GetMapping("/csrf-token")
