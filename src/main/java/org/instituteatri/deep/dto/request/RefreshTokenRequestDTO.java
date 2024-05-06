@@ -1,4 +1,4 @@
-package org.instituteatri.deep.dtos.request;
+package org.instituteatri.deep.dto.request;
 
 public record RefreshTokenRequestDTO(String refreshToken) {
 }
