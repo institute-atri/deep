@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OccurrenceService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OccurrenceService.class);
     private final OccurrenceRepository repository;
     private final ModelMapper modelMapper;
 
