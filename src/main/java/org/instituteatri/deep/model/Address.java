@@ -1,19 +1,29 @@
-package org.instituteatri.deep.controller.caseData;
+package org.instituteatri.deep.model;
 
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Getter
+
+@Table(name = "tb_address")
+@Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Embeddable
 public class Address {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private String streetAddress;
     private String houseNumber;
     private String neighborhood;
     private String city;
     private String zipCode;
     private String state;
+
+    @OneToOne
+    private Occurrence occurrence;
 }

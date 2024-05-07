@@ -1,4 +1,4 @@
-package org.instituteatri.deep.controller.caseData;
+package org.instituteatri.deep.model;
 
 public enum TypeOfCrime {
     ROBBERY,
