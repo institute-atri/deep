@@ -1,6 +1,7 @@
 package org.instituteatri.deep.model.token;
 
 import org.instituteatri.deep.model.user.User;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,7 @@ class TokenTest {
     private Token token;
 
     @Test
+    @DisplayName("Test Token Creation")
     void testTokenCreation() {
         Token fakeToken = new Token();
         fakeToken.setId("fakeId");
@@ -39,6 +41,7 @@ class TokenTest {
 
 
     @Test
+    @DisplayName("Test Token Type Setting")
     void testTokenType() {
         // Act
         token.setTokenType(TokenType.BEARER);
@@ -48,6 +51,7 @@ class TokenTest {
     }
 
     @Test
+    @DisplayName("Test Token Revocation")
     void testTokenRevocation() {
         // Act
         token.setTokenRevoked(true);
@@ -57,6 +61,7 @@ class TokenTest {
     }
 
     @Test
+    @DisplayName("Test Token Expiration")
     void testTokenExpiration() {
         // Act
         token.setTokenExpired(true);
