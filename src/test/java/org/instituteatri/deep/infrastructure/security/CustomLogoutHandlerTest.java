@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.instituteatri.deep.model.token.Token;
 import org.instituteatri.deep.repository.TokenRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -37,6 +38,7 @@ class CustomLogoutHandlerTest {
     }
 
     @Test
+    @DisplayName("Logout: Valid Token - Invalidates Token and Logs")
     void logout_ValidToken_InvalidatesTokenAndLogs() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -52,6 +54,7 @@ class CustomLogoutHandlerTest {
     }
 
     @Test
+    @DisplayName("Logout: Invalid Token - Sends Unauthorized Response")
     void logout_InvalidToken_SendsUnauthorizedResponse() throws Exception {
         // Arrange
         HttpServletRequest request = mock(HttpServletRequest.class);
@@ -77,6 +80,7 @@ class CustomLogoutHandlerTest {
     }
 
     @Test
+    @DisplayName("Send Unauthorized Response: Writes Unauthorized Response")
     void sendUnauthorizedResponse_WritesUnauthorizedResponse() throws IOException {
         // Arrange
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
