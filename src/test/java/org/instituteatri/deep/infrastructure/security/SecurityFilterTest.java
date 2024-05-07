@@ -8,6 +8,7 @@ import org.instituteatri.deep.model.token.Token;
 import org.instituteatri.deep.repository.TokenRepository;
 import org.instituteatri.deep.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -48,6 +49,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("Upon receiving a valid token, handleAuthentication must be called")
     void testDoFilterInternal_WithValidToken_ShouldCallHandleAuthentication() throws Exception {
         // Arrange
         HttpServletRequest requestMock = mock(HttpServletRequest.class);
@@ -65,6 +67,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("When receiving an authorization header present, must retrieve the token")
     void testRecoverTokenFromRequest_WhenAuthorizationHeaderPresent_ExpectTokenRecovered() {
         // Arrange
         when(request.getHeader("Authorization")).thenReturn("Bearer mockToken");
@@ -77,6 +80,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("When the authorization header is not present, the retrieved token is expected to be null")
     void testRecoverTokenFromRequest_WhenAuthorizationHeaderNotPresent_ExpectNull() {
         // Arrange
         when(request.getHeader("Authorization")).thenReturn(null);
@@ -89,6 +93,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("Upon receiving a valid token and user details, you must set authentication in the security context")
     void handleAuthentication_ValidTokenAndUserDetails_ShouldSetAuthenticationInSecurityContext() {
         mockValidTokenAndUserDetails();
         UserDetails userDetails = mock(UserDetails.class);
@@ -96,6 +101,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("Upon receiving an invalid token, it should handle the invalid token")
     void handleAuthentication_InvalidToken_ShouldHandleInvalidToken() throws Exception {
         // Arrange
         String token = "invalidToken";
@@ -118,6 +124,7 @@ class SecurityFilterTest {
 
 
     @Test
+    @DisplayName("When the token is not revoked and is not expired, it should return true")
     void testIsTokenValid_WhenTokenIsNotRevokedAndNotExpired_ExpectTrue() {
         // Arrange
         String token = "validToken";
@@ -134,6 +141,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("When the token is revoked and expired, it should return false")
     void testIsTokenValid_WhenTokenIsRevokedAndExpired_ExpectFalse() {
         // Arrange
         String token = "revokedAndExpired";
@@ -150,6 +158,7 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("When the token is not found, it should return false")
     void testIsTokenValid_WhenTokenNotFound_ExpectFalse() {
         // Arrange
         String token = "nonExistentToken";
@@ -163,12 +172,14 @@ class SecurityFilterTest {
     }
 
     @Test
+    @DisplayName("Set Authentication in Security Context")
     void setAuthenticationInSecurityContext() {
         UserDetails userDetails = mock(UserDetails.class);
         assertAuthenticationSetInSecurityContext(userDetails);
     }
 
     @Test
+    @DisplayName("Handle Invalid Token: Should Set Status and Write Message")
     void handleInvalidToken_shouldSetStatusAndWriteMessage() throws IOException {
         // Arrange
         TokenInvalidException tokenInvalidException = new TokenInvalidException("Invalid token");
