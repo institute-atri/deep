@@ -5,6 +5,7 @@ import org.instituteatri.deep.model.user.UserRole;
 import org.instituteatri.deep.exception.user.CustomAuthenticationException;
 import org.instituteatri.deep.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -38,22 +39,24 @@ class AccountLoginManagerImplTest {
 
 
     @Test
+    @DisplayName("Handle Successful Login: Locked Account - Should throw LockedException")
     void testHandleSuccessfulLogin_LockedAccount_ThrowsException() {
         // Arrange
         User user = mockLockedUser();
 
         // Act & Assert
-        assertThrows(LockedException.class, () -> accountLoginManager.handleSuccessfulLoginComponent(user));
+        assertThrows(LockedException.class, () -> accountLoginManager.handleSuccessfulLogin(user));
     }
 
     @Test
-    void handleSuccessfulLoginComponent_accountEnabled_noExceptionThrown() {
+    @DisplayName("Handle Successful Login: Account Enabled - No Exception Thrown")
+    void handleSuccessfulLogin_accountEnabled_noExceptionThrown() {
         // Arrange
         User newUser = createUser(emailTest, passwordTest);
         when(userRepository.save(any(User.class))).thenReturn(newUser);
 
         // Act
-        accountLoginManager.handleSuccessfulLoginComponent(newUser);
+        accountLoginManager.handleSuccessfulLogin(newUser);
 
         // Assert
         verify(userRepository).save(any(User.class));
@@ -61,6 +64,7 @@ class AccountLoginManagerImplTest {
 
 
     @Test
+    @DisplayName("Handle Bad Credentials: Increment Failed Login Attempts When User Exists")
     void testHandleBadCredentials_IncrementFailedLoginAttempts_WhenUserExists() {
         // Arrange
         User user = createUser(emailTest, passwordTest);
@@ -68,7 +72,7 @@ class AccountLoginManagerImplTest {
         when(userRepository.findByEmail("user@example.com")).thenReturn(user);
 
         // Act
-        assertThrows(CustomAuthenticationException.class, () -> accountLoginManager.handleBadCredentialsComponent("user@example.com"));
+        assertThrows(CustomAuthenticationException.class, () -> accountLoginManager.handleBadCredentials("user@example.com"));
 
         // Assert
         assertEquals(1, user.getFailedLoginAttempts());
@@ -76,6 +80,7 @@ class AccountLoginManagerImplTest {
 
 
     @Test
+    @DisplayName("Handle Bad Credentials: Lock Account When Failed Login Attempts Exceed Threshold")
     void testHandleBadCredentials_LockAccount_WhenFailedLoginAttemptsExceedThreshold() {
         // Arrange
         User user = createUser(emailTest, passwordTest);
@@ -83,7 +88,7 @@ class AccountLoginManagerImplTest {
         when(userRepository.findByEmail(emailTest)).thenReturn(user);
 
         // Act
-        assertThrows(CustomAuthenticationException.class, () -> accountLoginManager.handleBadCredentialsComponent(emailTest));
+        assertThrows(CustomAuthenticationException.class, () -> accountLoginManager.handleBadCredentials(emailTest));
 
         // Assert
         verify(userRepository).findByEmail(emailTest);
