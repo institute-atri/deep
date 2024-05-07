@@ -25,7 +25,6 @@ public class OccurrenceController {
     private final OccurrenceService service;
     private static final Logger LOGGER = LoggerFactory.getLogger(OccurrenceController.class);
 
-
     @GetMapping
     public ResponseEntity<List<OccurrenceResponseDTO>> getAll() {
         List<OccurrenceResponseDTO> all = service.getAll();
