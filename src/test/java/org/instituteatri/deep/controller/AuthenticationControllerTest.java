@@ -18,9 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Objects;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -44,7 +42,7 @@ class AuthenticationControllerTest {
     @Test
     void getLogin_WithValidCredentials_ReturnsResponseEntityWithStatus200() throws Exception {
         // Given
-        LoginRequestDTO authDto = new LoginRequestDTO("username", "password");
+        LoginRequestDTO authDto = new LoginRequestDTO("test@localhost.com", "@Test123k+");
         ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(new TokenResponseDTO("token", "refreshToken"), HttpStatus.OK);
 
         // When
@@ -73,7 +71,7 @@ class AuthenticationControllerTest {
         ResponseEntity<TokenResponseDTO> actualResponse = authenticationController.register(registerRequestDTO);
 
         // Then
-        assertEquals(HttpStatus.CREATED, actualResponse.getStatusCode());
+        assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
@@ -94,8 +92,13 @@ class AuthenticationControllerTest {
         ResponseEntity<TokenResponseDTO> responseEntity = authenticationController.refreshToken(tokenDTO);
 
         // Then
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("newToken", Objects.requireNonNull(responseEntity.getBody()).token());
-        assertEquals("newRefreshToken", responseEntity.getBody().refreshToken());
+        assertThat(responseEntity)
+                .isNotNull()
+                .extracting(ResponseEntity::getStatusCode)
+                .isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody())
+                .isNotNull()
+                .extracting(TokenResponseDTO::token, TokenResponseDTO::refreshToken)
+                .containsExactly("newToken", "newRefreshToken");
     }
 }
