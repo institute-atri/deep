@@ -1,14 +1,15 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
+import org.instituteatri.deep.dto.response.TokenResponseDTO;
+import org.instituteatri.deep.infrastructure.security.TokenService;
 import org.instituteatri.deep.model.token.Token;
 import org.instituteatri.deep.model.token.TokenType;
 import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.model.user.UserRole;
-import org.instituteatri.deep.dto.response.TokenResponseDTO;
-import org.instituteatri.deep.infrastructure.security.TokenService;
 import org.instituteatri.deep.repository.TokenRepository;
 import org.instituteatri.deep.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,6 +46,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Should generate and return access and refresh tokens")
     void generateTokenResponse_shouldGenerateAndReturnTokens() {
         // Arrange
         User user = new User(
@@ -75,6 +77,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when token service fails")
     void generateTokenResponse_shouldThrowExceptionWhenTokenServiceFails() {
         // Given
         User user = new User();
@@ -85,6 +88,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Should throw exception when token repository fails")
     void generateTokenResponse_shouldThrowExceptionWhenTokenRepositoryFails() {
         // Given
         User user = new User();
@@ -98,6 +102,7 @@ class TokenManagerImplTest {
 
 
     @Test
+    @DisplayName("Clear Tokens: Should delete all tokens for user")
     void clearTokens_shouldDeleteAllTokensForUser() {
         // Arrange
         String userId = "testUserId";
@@ -116,6 +121,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Save User Token: Should save token with correct values")
     void saveUserToken_shouldSaveTokenWithCorrectValues() {
         // Given
         User user = new User();
@@ -137,6 +143,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Save User Token: Should throw exception when TokenRepository fails")
     void saveUserToken_shouldThrowExceptionWhenTokenRepositoryFails() {
         // Given
         User user = new User();
@@ -147,6 +154,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Revoke All User Tokens: Should revoke all user tokens")
     void revokeAllUserTokens_shouldRevokeAllUserTokens() {
         // Arrange
         User user = new User();
@@ -177,6 +185,7 @@ class TokenManagerImplTest {
     }
 
     @Test
+    @DisplayName("Revoke All User Tokens: Should throw exception when token repository fails")
     void revokeAllUserTokens_shouldThrowExceptionWhenTokenRepositoryFails() {
         // Given
         User user = new User();
