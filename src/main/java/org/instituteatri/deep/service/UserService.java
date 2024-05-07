@@ -1,30 +1,29 @@
 package org.instituteatri.deep.service;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.dto.request.RegisterRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.exception.user.UserNotFoundException;
-import org.instituteatri.deep.mapper.UserMapper;
+import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.repository.TokenRepository;
 import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.*;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserMapper userMapper;
     private final TokenRepository tokenRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -33,20 +32,20 @@ public class UserService {
     private final PasswordValidationStrategy passwordValidationStrategy;
     private final UserIdValidationStrategy userIdValidationStrategy;
     private final EmailAlreadyValidationStrategy emailAlreadyValidationStrategy;
+    private final ModelMapper modelMapper;
 
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
         List<User> users = userRepository.findAll();
+        List<UserResponseDTO> response = new ArrayList<>();
 
-        return ResponseEntity.ok(users.stream()
-                .map(userMapper::toUserDto)
-                .toList());
+        users.forEach(x -> response.add(modelMapper.map(x, UserResponseDTO.class)));
+        return ResponseEntity.ok(response);
     }
 
     public UserResponseDTO getByUserId(String id) {
-        Optional<User> user = userRepository.findById(id);
-
-        return user.map(userMapper::toUserDto).orElseThrow(()
-                -> new UserNotFoundException(id));
+        return userRepository.findById(id)
+                .map(user -> modelMapper.map(user, UserResponseDTO.class))
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
     @Transactional

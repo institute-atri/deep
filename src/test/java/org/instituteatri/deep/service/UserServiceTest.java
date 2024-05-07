@@ -4,7 +4,6 @@ import org.instituteatri.deep.dto.request.RegisterRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.exception.user.UserNotFoundException;
-import org.instituteatri.deep.mapper.UserMapper;
 import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.repository.TokenRepository;
 import org.instituteatri.deep.repository.UserRepository;
@@ -14,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ class UserServiceTest {
     @Mock
     private TokenRepository tokenRepository;
     @Mock
-    private UserMapper userMapper;
+    private ModelMapper modelMapper;
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
@@ -85,7 +85,7 @@ class UserServiceTest {
         verify(userRepository, times(1)).findAll();
 
         // Verify that the interaction with userMapper occurred for each user in the list
-        verify(userMapper, times(2)).toUserDto(any(User.class));
+        verify(modelMapper, times(2)).map(any(User.class), eq(UserResponseDTO.class));
     }
 
     @Test
@@ -99,7 +99,7 @@ class UserServiceTest {
                 emailTest);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(mockUser));
-        when(userMapper.toUserDto(mockUser)).thenReturn(mockUserResponseDTO);
+        when(modelMapper.map(mockUser, UserResponseDTO.class)).thenReturn(mockUserResponseDTO);
 
         // Act
         UserResponseDTO responseDTO = userService.getByUserId(userId);
@@ -183,6 +183,6 @@ class UserServiceTest {
         UserResponseDTO userResponseDTO = new UserResponseDTO(userId, userName, emailTest);
 
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(userMapper.toUserDto(user)).thenReturn(userResponseDTO);
+        when(modelMapper.map(user, UserResponseDTO.class)).thenReturn(userResponseDTO);
     }
 }
