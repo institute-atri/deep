@@ -1,15 +1,16 @@
 package org.instituteatri.deep.service;
 
-import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.dto.request.RegisterRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.exception.user.UserNotFoundException;
 import org.instituteatri.deep.mapper.UserMapper;
+import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.repository.TokenRepository;
 import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.*;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -65,8 +67,8 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Get All Users: Should Return All Users")
     void getAllUsers_ShouldReturnAllUsers() {
-
         // Call mockUserAndDTO to set up the mock objects
         mockUserAndDTO();
 
@@ -87,6 +89,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Get User By ID: User Exists, Returns User DTO")
     void getByUserId_UserExists_ReturnsUserDTO() {
         // Arrange
         User mockUser = new User();
@@ -99,13 +102,14 @@ class UserServiceTest {
         when(userMapper.toUserDto(mockUser)).thenReturn(mockUserResponseDTO);
 
         // Act
-        UserResponseDTO result = userService.getByUserId(userId);
+        UserResponseDTO responseDTO = userService.getByUserId(userId);
 
         // Assert
-        assertEquals(mockUserResponseDTO, result);
+        assertEquals(mockUserResponseDTO, responseDTO);
     }
 
     @Test
+    @DisplayName("Get User By ID: User Does Not Exist, Throws Exception")
     void getByUserId_UserDoesNotExist_ThrowsException() {
         // Arrange
         String userId = "nonExistentId";
@@ -116,6 +120,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Delete User: Should Delete User and Tokens When User Exists")
     void deleteUser_ShouldDeleteUserAndTokens_WhenUserExists() {
 
         User user = new User();
@@ -133,6 +138,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Delete User: Should Throw Exception When User Does Not Exist")
     void deleteUser_ShouldThrowException_WhenUserDoesNotExist() {
         // Arrange
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -144,6 +150,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("Update User: Should Update User Successfully")
     void updateUser_Success() {
         User existingUser = new User();
         existingUser.setId(userId);
@@ -158,10 +165,12 @@ class UserServiceTest {
         when(userRepository.findById(userId)).thenReturn(java.util.Optional.of(existingUser));
         when(authTokenManager.generateTokenResponse(existingUser)).thenReturn(expectedResponse);
 
-        ResponseEntity<TokenResponseDTO> response = userService.updateUser(userId, updatedUserDto, authentication);
+        ResponseEntity<TokenResponseDTO> responseEntity = userService.updateUser(userId, updatedUserDto, authentication);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
+        assertThat(responseEntity)
+                .isNotNull()
+                .extracting(ResponseEntity::getStatusCode, ResponseEntity::getBody)
+                .containsExactly(HttpStatus.OK, expectedResponse);
 
         verify(userRepository).save(any(User.class));
         verify(authTokenManager).revokeAllUserTokens(any(User.class));
