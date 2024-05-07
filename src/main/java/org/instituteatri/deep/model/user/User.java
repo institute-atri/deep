@@ -23,7 +23,11 @@ import java.util.List;
 @NoArgsConstructor
 /*
  * TODO: This class is still under development.
- * Additional implementations will be added as needed.
+ *  - Additional implementations are required for:
+ *  - Adding methods for user profile management
+ *  - Handling account locking and unlocking
+ *  - Adding more properties to the class.
+ *  - Additional implementations will be added as needed.
  */
 public class User implements UserDetails {
 
