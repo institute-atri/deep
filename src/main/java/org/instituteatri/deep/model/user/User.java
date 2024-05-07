@@ -21,6 +21,10 @@ import java.util.List;
 @Table(name = "tb_users")
 @AllArgsConstructor
 @NoArgsConstructor
+/*
+ * TODO: This class is still under development.
+ * Additional implementations will be added as needed.
+ */
 public class User implements UserDetails {
 
     @Id

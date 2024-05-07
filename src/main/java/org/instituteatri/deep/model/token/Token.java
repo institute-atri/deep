@@ -13,6 +13,10 @@ import org.instituteatri.deep.model.user.User;
 @Table(name = "tb_tokens")
 @NoArgsConstructor
 @AllArgsConstructor
+/*
+ * TODO: This class is still under development.
+ * Additional implementations will be added as needed.
+ */
 public class Token {
 
     @Id
