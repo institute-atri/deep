@@ -4,32 +4,32 @@ package org.instituteatri.deep.controllers;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/documents-and-evidence")
-public class DocumentsAndEvidenceController {
+@RequestMapping("/documents-and-evidences")
+public class DocumentsAndEvidencesController {
 
     @PostMapping("/documents")
     public String getDocuments() {
-        return "Hello, Documents!";
+        return "Hello, Deep!";
     }
 
     @GetMapping("/documents/{id}")
     public String getDocumentsById() {
-        return "Hello, Documents!";
+        return "Hello, Deep!";
     }
 
     @GetMapping("/cases/{casesId}/documents")
     public String getDocumentsByCasesId() {
-        return "Hello, Documents!";
+        return "Hello, Deep!";
     }
 
     @PutMapping("/documents/{id}")
     public String updateDocumentsById() {
-        return "Hello, Documents!";
+        return "Hello, Deep!";
     }
 
     @DeleteMapping("/documents/{id}")
     public String deleteDocumentsById() {
-        return "Hello, Documents!";
+        return "Hello, Deep!";
     }
 
 
