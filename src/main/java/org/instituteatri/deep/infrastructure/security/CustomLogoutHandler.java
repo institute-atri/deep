@@ -60,7 +60,7 @@ public class CustomLogoutHandler implements LogoutHandler {
         tokenRepository.save(token);
     }
 
-    private void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
+    public void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(TOKEN_EXPIRED_MESSAGE);
     }
