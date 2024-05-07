@@ -19,7 +19,7 @@ import java.util.List;
 public class Defendant {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private Long id;
+    private String id;
 
     private String name;
     private String birthday;
@@ -31,5 +31,5 @@ public class Defendant {
 
     @ManyToMany(mappedBy = "defendant")
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class , property = "id")
-    private List <Occurrence> occurrences = new ArrayList<>();
+    private List<Occurrence> occurrences = new ArrayList<>();
 }
