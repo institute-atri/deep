@@ -48,10 +48,10 @@ public class AccountService implements UserDetailsService {
     public ResponseEntity<TokenResponseDTO> loginAccount(LoginRequestDTO authDto, AuthenticationManager authManager) {
 
         try {
-            var authResult = accountLoginManager.authenticateUserComponent(authDto, authManager);
+            var authResult = accountLoginManager.authenticateUser(authDto, authManager);
             var user = (User) authResult.getPrincipal();
 
-            accountLoginManager.handleSuccessfulLoginComponent(user);
+            accountLoginManager.handleSuccessfulLogin(user);
             authTokenManager.revokeAllUserTokens(user);
 
             log.info("[USER_AUTHENTICATED] User: {} successfully authenticated.", user.getUsername());
@@ -63,7 +63,7 @@ public class AccountService implements UserDetailsService {
 
         } catch (BadCredentialsException e) {
             log.warn("[USER_LOGIN_FAILED] Failed login attempt with email: {}", authDto.email());
-            return accountLoginManager.handleBadCredentialsComponent(authDto.email());
+            return accountLoginManager.handleBadCredentials(authDto.email());
         }
     }
 

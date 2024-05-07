@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 
 public interface AccountLoginManager {
 
-    Authentication authenticateUserComponent(LoginRequestDTO authDto, AuthenticationManager authManager);
-    void handleSuccessfulLoginComponent(User user);
-    ResponseEntity<TokenResponseDTO> handleBadCredentialsComponent(String email);
+    Authentication authenticateUser(LoginRequestDTO authDto, AuthenticationManager authManager);
+    void handleSuccessfulLogin(User user);
+    ResponseEntity<TokenResponseDTO> handleBadCredentials(String email);
 }

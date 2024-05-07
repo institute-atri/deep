@@ -1,10 +1,10 @@
 package org.instituteatri.deep.service.strategy.implstrategy;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.dto.request.LoginRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.exception.user.CustomAuthenticationException;
+import org.instituteatri.deep.model.user.User;
 import org.instituteatri.deep.repository.UserRepository;
 import org.instituteatri.deep.service.strategy.interfaces.AccountLoginManager;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +22,13 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
 
 
     @Override
-    public Authentication authenticateUserComponent(LoginRequestDTO authDto, AuthenticationManager authManager) {
+    public Authentication authenticateUser(LoginRequestDTO authDto, AuthenticationManager authManager) {
         var usernamePassword = new UsernamePasswordAuthenticationToken(authDto.email(), authDto.password());
         return authManager.authenticate(usernamePassword);
     }
 
     @Override
-    public void handleSuccessfulLoginComponent(User user) {
+    public void handleSuccessfulLogin(User user) {
         if (!user.isEnable()) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
             userRepository.save(user);
@@ -43,7 +43,7 @@ public class AccountLoginManagerImpl implements AccountLoginManager {
     }
 
     @Override
-    public ResponseEntity<TokenResponseDTO> handleBadCredentialsComponent(String email) {
+    public ResponseEntity<TokenResponseDTO> handleBadCredentials(String email) {
         var user = (User) userRepository.findByEmail(email);
         if (user != null) {
             user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
