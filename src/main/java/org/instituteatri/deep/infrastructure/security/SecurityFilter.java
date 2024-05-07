@@ -60,7 +60,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         return token;
     }
 
-    private void handleAuthentication(String token, HttpServletResponse response)
+    public void handleAuthentication(String token, HttpServletResponse response)
             throws IOException {
 
         try {
@@ -96,13 +96,13 @@ public class SecurityFilter extends OncePerRequestFilter {
         return userRepository.findByEmail(email);
     }
 
-    private boolean isTokenValid(String token) {
+    public boolean isTokenValid(String token) {
         return tokenRepository.findByTokenValue(token)
                 .map(t -> !t.isTokenExpired() && !t.isTokenRevoked())
                 .orElse(false);
     }
 
-    private void setAuthenticationInSecurityContext(UserDetails userDetails) {
+    public void setAuthenticationInSecurityContext(UserDetails userDetails) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
@@ -111,7 +111,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    private void handleInvalidToken(HttpServletResponse response, TokenInvalidException e)
+    public void handleInvalidToken(HttpServletResponse response, TokenInvalidException e)
             throws IOException {
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
