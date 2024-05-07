@@ -21,14 +21,6 @@ import java.util.List;
 @Table(name = "tb_users")
 @AllArgsConstructor
 @NoArgsConstructor
-/*
- * TODO: This class is still under development.
- *  - Additional implementations are required for:
- *  - Adding methods for user profile management
- *  - Handling account locking and unlocking
- *  - Adding more properties to the class.
- *  - Additional implementations will be added as needed.
- */
 public class User implements UserDetails {
 
     @Id
