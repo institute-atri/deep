@@ -49,8 +49,4 @@ public class ChatService {
         messageService.save(response.message(), occurrenceId);
         return response;
     }
-    public void deleteChatMessage(String occurrenceId) {
-        LOGGER.info("Deleting chat messages for occurrence ID: {}", occurrenceId);
-        messageService.delete(occurrenceId);
-    }
 }

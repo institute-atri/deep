@@ -37,6 +37,7 @@ public class OccurrenceService {
         return modelMapper.map(occurrence, OccurrenceResponseDTO.class);
     }
 
+    @Transactional
     public OccurrenceResponseDTO save(OccurrenceRequestDTO request) {
         Occurrence occurrence = modelMapper.map(request, Occurrence.class);
         occurrence.setCreatedAt(Instant.now());
@@ -44,7 +45,7 @@ public class OccurrenceService {
         Occurrence occurrenceSaved = repository.save(occurrence);
         return modelMapper.map(occurrenceSaved, OccurrenceResponseDTO.class);
     }
-    @Transactional
+
     public void delete(String id) {
         LOGGER.info("Deleting ID: {} from the database", id);
         repository.deleteById(id);
@@ -52,4 +53,4 @@ public class OccurrenceService {
 
     }
 
-    }
+}

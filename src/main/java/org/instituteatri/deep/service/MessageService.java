@@ -30,8 +30,4 @@ public class MessageService {
         msg.setCreatedAt(Instant.now());
         repository.save(msg);
     }
-    public void delete (String occurrenceId) {
-        // Assuming cascading behavior for message deletion
-        occurrenceService.delete(occurrenceId);
-    }
 }
