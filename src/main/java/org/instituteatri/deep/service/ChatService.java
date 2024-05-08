@@ -3,7 +3,6 @@ package org.instituteatri.deep.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.instituteatri.deep.controller.ChatController;
 import org.instituteatri.deep.dto.request.ChatRequestDTO;
 import org.instituteatri.deep.dto.response.OccurrenceResponseDTO;
 import org.instituteatri.deep.model.Occurrence;
@@ -49,5 +48,9 @@ public class ChatService {
         LOGGER.info("Inserting {} to the database", msg);
         messageService.save(response.message(), occurrenceId);
         return response;
+    }
+    public void deleteChatMessage(String occurrenceId) {
+        LOGGER.info("Deleting chat messages for occurrence ID: {}", occurrenceId);
+        messageService.delete(occurrenceId);
     }
 }

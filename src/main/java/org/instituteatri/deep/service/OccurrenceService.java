@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.instituteatri.deep.controller.ChatController;
+import jakarta.transaction.Transactional;
 import org.instituteatri.deep.dto.request.OccurrenceRequestDTO;
 import org.instituteatri.deep.dto.response.OccurrenceResponseDTO;
 import org.instituteatri.deep.exception.BadRequestException;
@@ -44,9 +44,12 @@ public class OccurrenceService {
         Occurrence occurrenceSaved = repository.save(occurrence);
         return modelMapper.map(occurrenceSaved, OccurrenceResponseDTO.class);
     }
-
+    @Transactional
     public void delete(String id) {
         LOGGER.info("Deleting ID: {} from the database", id);
         repository.deleteById(id);
+        LOGGER.info("Occurrence deleted successfully");
+
     }
-}
+
+    }

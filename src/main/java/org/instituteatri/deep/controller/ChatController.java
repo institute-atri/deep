@@ -6,11 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,5 +22,11 @@ public class ChatController {
             @PathVariable String occurrenceId) {
         LOGGER.info("Received request to generate a chat response");
         return ResponseEntity.ok(service.generate(request, occurrenceId));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        LOGGER.info("Received request to delete chat message with ID: {}", id);
+        service.deleteChatMessage(id);
+        return ResponseEntity.noContent().build();
     }
 }
