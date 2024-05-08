@@ -3,12 +3,8 @@ package org.instituteatri.deep.model;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,6 +27,6 @@ public class Occurrence {
     private Instant createdAt;
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "occurrence")
+    @OneToMany(mappedBy = "occurrence", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 }
