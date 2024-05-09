@@ -23,10 +23,4 @@ public class ChatController {
         LOGGER.info("Received request to generate a chat response");
         return ResponseEntity.ok(service.generate(request, occurrenceId));
     }
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
-        LOGGER.info("Received request to delete chat message with ID: {}", id);
-        service.deleteChatMessage(id);
-        return ResponseEntity.noContent().build();
-    }
 }
