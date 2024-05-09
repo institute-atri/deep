@@ -1,14 +1,14 @@
 package org.instituteatri.deep.model;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "tb_occurrence")
@@ -29,4 +29,10 @@ public class Occurrence {
 
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "occurrence_defendants",
+            joinColumns = @JoinColumn(name = "occurrence_id"),
+            inverseJoinColumns = @JoinColumn(name = "defendant_id"))
+    private List<Defendant> defendants = new ArrayList<>();
 }

@@ -3,4 +3,4 @@ spring:
     name: deep
   profiles:
     active:
-      - dev
+      - test
