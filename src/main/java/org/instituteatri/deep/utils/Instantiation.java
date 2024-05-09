@@ -18,10 +18,10 @@ public class Instantiation implements CommandLineRunner {
     private final TokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${admin.password}")
+    @Value("${initiation.admin.password}")
     private String adminPassword;
 
-    @Value("${user.password}")
+    @Value("${initiation.user.password}")
     private String userPassword;
 
     @Override
