@@ -19,3 +19,15 @@ spring:
       chat:
         options:
           model: llama3
+
+security:
+  token:
+    private-key: 'classpath:app.key'
+    public-key: 'classpath:app.pub'
+    expiration-token: 15
+    expiration-refresh-token: 30
+
+admin:
+  password: '@Admin23k+'
+user:
+  password: '@User23k+'
