@@ -56,9 +56,15 @@ public class OpenAPIConfig {
                                 .bearerFormat("JWT")
                                 .scheme("bearer")
                         )
+                        .addSecuritySchemes("XSRFToken", new SecurityScheme()
+                                .type(SecurityScheme.Type.APIKEY)
+                                .name("X-XSRF-TOKEN")
+                                .in(SecurityScheme.In.HEADER)
+                        )
                 )
                 .addSecurityItem(new SecurityRequirement()
                         .addList("JWTToken")
+                        .addList("XSRFToken")
                 );
         return openAPI;
     }
