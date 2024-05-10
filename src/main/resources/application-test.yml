@@ -26,10 +26,16 @@ security:
     expiration-token: 15
     expiration-refresh-token: 30
 
-admin:
-  password: '@Admin23k+'
-user:
-  password: '@User23k+'
+initiation:
+  admin:
+    password: '@Admin23k+'
+  user:
+    password: '@User23k+'
 
 emailTest: 'user@example.com'
 passwordTest: '@Password1k+'
+
+deep:
+  openapi:
+    dev-url: http://localhost:8080
+    prod-url: https://www.orgatri.com

@@ -28,5 +28,8 @@ public class Defendant {
     private Address address;
 
     @ManyToMany
+    @JoinTable(name = "tb_occurrence_defendants",
+            joinColumns = @JoinColumn(name = "defendant_id"),
+            inverseJoinColumns = @JoinColumn(name = "occurrence_id"))
     private List<Occurrence> occurrences = new ArrayList<>();
 }

@@ -30,9 +30,6 @@ public class Occurrence {
     @OneToMany(mappedBy = "occurrence", cascade = CascadeType.ALL)
     private List<Message> messages = new ArrayList<>();
 
-    @ManyToMany
-    @JoinTable(name = "occurrence_defendants",
-            joinColumns = @JoinColumn(name = "occurrence_id"),
-            inverseJoinColumns = @JoinColumn(name = "defendant_id"))
+    @ManyToMany(mappedBy = "occurrences")
     private List<Defendant> defendants = new ArrayList<>();
 }
