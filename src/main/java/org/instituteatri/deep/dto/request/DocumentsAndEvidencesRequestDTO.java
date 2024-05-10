@@ -14,6 +14,8 @@ public class DocumentsAndEvidencesRequestDTO {
     private String description;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private String date;
-
     private String place;
+    private String type;
+    private String currentState;
+    private String responsible;
 }

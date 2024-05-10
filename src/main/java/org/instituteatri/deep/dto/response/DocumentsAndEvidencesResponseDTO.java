@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.management.relation.Role;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,4 +14,9 @@ public class DocumentsAndEvidencesResponseDTO {
     private String name;
     private String description;
     private String date;
+    private String place;
+    private String type;
+    private String currentState;
+    private String message;
+    private String responsible;
 }

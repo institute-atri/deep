@@ -1,16 +1,22 @@
-package org.instituteatri.deep.controllers;
+package org.instituteatri.deep.controller;
 
 
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 
 @RestController
 @RequestMapping("/documents-and-evidences")
 public class DocumentsAndEvidencesController {
 
+
     @PostMapping("/documents")
-    public String getDocuments() {
-        return "Hello, Deep!";
-    }
+    public String getDocuments() { return "Hello, Deep!"; }
 
     @GetMapping("/documents/{id}")
     public String getDocumentsById() {
