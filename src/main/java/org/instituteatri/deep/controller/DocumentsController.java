@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 
 
 @RestController
-@RequestMapping("/documents-and-evidences")
-public class DocumentsAndEvidencesController {
+@RequestMapping("/documents")
+public class DocumentsController {
 
 
     @PostMapping("/documents")
