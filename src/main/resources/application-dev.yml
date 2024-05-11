@@ -7,16 +7,3 @@ spring:
     username: wen
     password:
 
-
-security:
-  token:
-    private-key: 'classpath:app.key'
-    public-key: 'classpath:app.pub'
-    expiration-token: 15
-    expiration-refresh-token: 30
-
-
-admin:
-  password: '@Adminwe'
-user:
-  password: '@Userwe'

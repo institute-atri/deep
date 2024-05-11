@@ -5,5 +5,6 @@ public class EvidencesModel {
     private String name;
     private String description;
     private String createdAt;
+    private String Author;
 
 }
