@@ -1,5 +1,6 @@
 package org.instituteatri.deep.repository;
 
-public class DocumentsAndEvidencesRepository {
+public class DocumentsRepository {
+
 
 }
