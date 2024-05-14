@@ -1,7 +1,6 @@
 package org.instituteatri.deep.model;
 
 import java.time.Instant;
-import org.springframework.ai.ollama.api.OllamaApi.Message.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
