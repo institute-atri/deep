@@ -12,7 +12,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = "evidences")
+@Table(name = "documents")
 @Entity
 public class DocumentsModel {
     @Id
