@@ -38,7 +38,7 @@ public class EvidencesService {
         return modelMapper.map(evidence, EvidencesResponseDTO.class);
     }
 
-    public EvidencesResponseDTO updateEvidenceById(EvidencesResponseDTO request) {
+    public EvidencesResponseDTO updateEvidencesById(EvidencesResponseDTO request) {
         EvidencesModel evidence = modelMapper.map(request, EvidencesModel.class);
         evidence.setCreatedAt(Instant.now());
         logger.info("Updating evidence with ID {}", evidence.getId());
@@ -51,7 +51,5 @@ public class EvidencesService {
         logger.info("Deleting evidence with ID {}", id);
         evidencesRepository.deleteById(id);
     }
-
-
 
 }
