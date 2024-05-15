@@ -1,15 +1,26 @@
 package org.instituteatri.deep.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Table(name = "evidences")
 @Entity
 public class DocumentsModel {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
         private String id;
         private String name;
         private String description;
-        private String createdAt;
+        private Instant createdAt;
         private String Author;
     }
 
