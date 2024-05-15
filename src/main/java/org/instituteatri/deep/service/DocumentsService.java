@@ -1,5 +1,6 @@
 package org.instituteatri.deep.service;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.instituteatri.deep.dto.response.DocumentsResponseDTO;
@@ -9,9 +10,11 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.time.Instant;
 import java.util.List;
 import java.util.ArrayList;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class DocumentsService {
         }
         return documentsResponseDTO;
     }
-    public DocumentsResponseDTO getDocumentById(String id) {
+    public DocumentsResponseDTO getDocumentsById(String id) {
         DocumentsModel document = documentsRepository.findById(id).orElse(null);
         if (document == null) {
             logger.error("Document with ID {} not found", id);
@@ -36,6 +39,15 @@ public class DocumentsService {
         }
         return modelMapper.map(document, DocumentsResponseDTO.class);
     }
+
+    public DocumentsResponseDTO createDocuments(DocumentsResponseDTO request) {
+        DocumentsModel document = modelMapper.map(request, DocumentsModel.class);
+        document.setCreatedAt(Instant.now());
+        logger.info("Creating document with ID {}", document.getId());
+        documentsRepository.save(document);
+        return modelMapper.map(document, DocumentsResponseDTO.class);
+    }
+
     public DocumentsResponseDTO updateDocumentsById(DocumentsResponseDTO request) {
         DocumentsModel document = modelMapper.map(request, DocumentsModel.class);
         document.setCreatedAt(Instant.now());

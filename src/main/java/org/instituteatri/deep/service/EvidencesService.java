@@ -29,6 +29,14 @@ public class EvidencesService {
         return evidencesResponseDTO;
     }
 
+    public EvidencesResponseDTO createEvidences(EvidencesResponseDTO request) {
+        EvidencesModel evidence = modelMapper.map(request, EvidencesModel.class);
+        evidence.setCreatedAt(Instant.now());
+        logger.info("Creating evidence with ID {}", evidence.getId());
+        evidencesRepository.save(evidence);
+        return modelMapper.map(evidence, EvidencesResponseDTO.class);
+    }
+
     public EvidencesResponseDTO getEvidenceById(String id) {
         EvidencesModel evidence = evidencesRepository.findById(id).orElse(null);
         if (evidence == null) {
