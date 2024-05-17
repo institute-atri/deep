@@ -1,9 +1,39 @@
 spring:
-  application:
-    name: deep
+  config:
+    import: optional:secrets.properties
   datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: wen
-    password:
+    driverClassName: org.postgresql.Driver
+    url: ${DATASOURCE_URL}
+    username: postgres
+    password: password
+  jpa:
+    hibernate.ddl-auto: create-drop
+    generate-ddl: true
+    show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  ai:
+    ollama:
+      chat:
+        options:
+          model: llama3
 
+security:
+  token:
+    private-key: 'classpath:app.key'
+    public-key: 'classpath:app.pub'
+    expiration-token: 15
+    expiration-refresh-token: 30
+
+initiation:
+  admin:
+    password: '@Admin23k+'
+  user:
+    password: '@User23k+'
+
+deep:
+  openapi:
+    dev-url: http://localhost:8080
+    prod-url: https://www.orgatri.com
