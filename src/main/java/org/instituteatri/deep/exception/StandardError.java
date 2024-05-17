@@ -6,11 +6,9 @@ import lombok.Data;
 @Data
 @Builder
 public class StandardError {
-    private String message;
-    private Integer status;
     private Long timestamp;
-    private String path;
+    private Integer status;
     private String error;
+    private String message;
+    private String path;
 }
-
-

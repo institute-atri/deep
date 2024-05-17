@@ -13,7 +13,7 @@ public class ResourcesExceptionHandler{
         HttpStatus status = HttpStatus.BAD_REQUEST;
         StandardError err = StandardError.builder()
                 .status(status.value())
-                .error("Not Found")
+                .error("Not found")
                 .message(e.getMessage())
                 .path(request.getRequestURI())
                 .timestamp(System.currentTimeMillis())
