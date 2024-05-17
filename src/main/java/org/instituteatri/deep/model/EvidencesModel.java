@@ -18,6 +18,7 @@ public class EvidencesModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
         private String id;
+        private String caseId;
         private String name;
         private String description;
         private Instant createdAt;

@@ -23,41 +23,49 @@ public class DocumentsService {
     private final DocumentsRepository documentsRepository;
     private final ModelMapper modelMapper;
 
-    public List<DocumentsResponseDTO> getAllDocuments() {
-        List<DocumentsModel> documents = documentsRepository.findAll();
-        List<DocumentsResponseDTO> documentsResponseDTO = new ArrayList<>();
-        for (DocumentsModel document : documents) {
-            documentsResponseDTO.add(modelMapper.map(document, DocumentsResponseDTO.class));
+
+    public List<DocumentsResponseDTO> getDocumentsByCaseId(String caseId) {
+        List<DocumentsModel> documents = documentsRepository.findByCaseId(caseId);
+        if (documents.isEmpty()) {
+            logger.error("Documents with case ID {} not found", caseId);
+            return new ArrayList<>();
+        } else {
+            return documents.stream()
+                    .map(document -> modelMapper.map(document, DocumentsResponseDTO.class))
+                    .toList();
+
+
         }
-        return documentsResponseDTO;
-    }
-    public DocumentsResponseDTO getDocumentsById(String id) {
-        DocumentsModel document = documentsRepository.findById(id).orElse(null);
-        if (document == null) {
-            logger.error("Document with ID {} not found", id);
-            return null;
-        }
-        return modelMapper.map(document, DocumentsResponseDTO.class);
     }
 
-    public DocumentsResponseDTO createDocuments(DocumentsResponseDTO request) {
-        DocumentsModel document = modelMapper.map(request, DocumentsModel.class);
-        document.setCreatedAt(Instant.now());
-        logger.info("Creating document with ID {}", document.getId());
-        documentsRepository.save(document);
-        return modelMapper.map(document, DocumentsResponseDTO.class);
+        public DocumentsResponseDTO getDocumentsById (String id){
+            DocumentsModel document = documentsRepository.findById(id).orElse(null);
+            if (document == null) {
+                logger.error("Document with ID {} not found", id);
+                return null;
+            }
+            return modelMapper.map(document, DocumentsResponseDTO.class);
+        }
+
+        public DocumentsResponseDTO createDocuments (DocumentsResponseDTO request){
+            DocumentsModel document = modelMapper.map(request, DocumentsModel.class);
+            document.setCreatedAt(Instant.now());
+            logger.info("Creating document with ID {}", document.getId());
+            documentsRepository.save(document);
+            return modelMapper.map(document, DocumentsResponseDTO.class);
+        }
+
+        public DocumentsResponseDTO updateDocumentsById (DocumentsResponseDTO request){
+            DocumentsModel document = modelMapper.map(request, DocumentsModel.class);
+            document.setCreatedAt(Instant.now());
+            logger.info("Updating document with ID {}", document.getId());
+            documentsRepository.save(document);
+            return modelMapper.map(document, DocumentsResponseDTO.class);
+        }
+        public void deleteDocumentById (String id){
+            logger.info("Deleting document with ID {}", id);
+            documentsRepository.deleteById(id);
+        }
     }
 
-    public DocumentsResponseDTO updateDocumentsById(DocumentsResponseDTO request) {
-        DocumentsModel document = modelMapper.map(request, DocumentsModel.class);
-        document.setCreatedAt(Instant.now());
-        logger.info("Updating document with ID {}", document.getId());
-        documentsRepository.save(document);
-        return modelMapper.map(document, DocumentsResponseDTO.class);
-    }
-    public void deleteDocumentById(String id) {
-        logger.info("Deleting document with ID {}", id);
-        documentsRepository.deleteById(id);
-    }
-}
 

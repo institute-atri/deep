@@ -49,10 +49,12 @@ EvidencesResponseDTO response = evidencesService.createEvidences(request);
         return ResponseEntity.ok(evidencesService.updateEvidencesById(request));
     }
 
-    @GetMapping("/evidences/all")
-    public ResponseEntity<List<EvidencesResponseDTO>> getAllEvidences() {
-        logger.info("Getting all evidences");
-        return ResponseEntity.ok(evidencesService.getAllEvidences());
+    @GetMapping("/cases/{caseId}")
+    public ResponseEntity<List<EvidencesResponseDTO>> getEvidencesByCaseId(@PathVariable String caseId) {
+        logger.info("Getting evidences by case ID {}", caseId);
+        List<EvidencesResponseDTO> evidences = evidencesService.getEvidenceByCaseId(caseId);
+        return ResponseEntity.ok(evidences);
+
     }
 
 

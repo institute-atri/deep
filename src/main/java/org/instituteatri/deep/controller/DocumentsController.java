@@ -46,14 +46,13 @@ public class DocumentsController {
         return ResponseEntity.ok(documentsService.updateDocumentsById(request));
     }
 
-    @GetMapping("/documents/all")
-    public ResponseEntity<List<DocumentsResponseDTO>> getAllDocuments() {
-        logger.info("Getting all documents");
-        return ResponseEntity.ok(documentsService.getAllDocuments());
+    @GetMapping("/cases/{caseId}")
+    public ResponseEntity<List<DocumentsResponseDTO>> getDocumentsByCaseId(@PathVariable String caseId) {
+        logger.info("Getting documents by case ID {}", caseId);
+        List<DocumentsResponseDTO> documents = documentsService.getDocumentsByCaseId(caseId);
+        return ResponseEntity.ok(documents);
+
     }
-
-
-
 }
 
 

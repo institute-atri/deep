@@ -20,13 +20,16 @@ public class EvidencesService {
     private final EvidencesRepository evidencesRepository;
     private final ModelMapper modelMapper;
 
-    public List<EvidencesResponseDTO> getAllEvidences() {
-        List<EvidencesModel> evidences = evidencesRepository.findAll();
-        List<EvidencesResponseDTO> evidencesResponseDTO = new ArrayList<>();
-        for (EvidencesModel evidence : evidences) {
-            evidencesResponseDTO.add(modelMapper.map(evidence, EvidencesResponseDTO.class));
+public List<EvidencesResponseDTO> getEvidenceByCaseId(String caseId) {
+        List<EvidencesModel> evidences = evidencesRepository.findByCaseId(caseId);
+        if (evidences.isEmpty()) {
+            logger.error("Evidences with case ID {} not found", caseId);
+            return new ArrayList<>();
+        } else {
+            return evidences.stream()
+                    .map(evidence -> modelMapper.map(evidence, EvidencesResponseDTO.class))
+                    .toList();
         }
-        return evidencesResponseDTO;
     }
 
     public EvidencesResponseDTO createEvidences(EvidencesResponseDTO request) {
