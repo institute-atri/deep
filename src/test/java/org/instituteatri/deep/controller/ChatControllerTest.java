@@ -32,7 +32,7 @@ public class ChatControllerTest {
         ChatResponseDTO expectedResponse = ChatResponseDTO.builder().text("Ok").build();
 
         when(chatService.generateGemini(any(ChatRequestDTO.class), anyString())).thenReturn(expectedResponse);
-        ChatRequestDTO request = new ChatRequestDTO();
+        ChatRequestDTO request = ChatRequestDTO.builder().build();
         String occurrenceId = "1";
 
         ResponseEntity<ChatResponseDTO> response = chatController.generateGemini(request, occurrenceId);
