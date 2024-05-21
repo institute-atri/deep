@@ -38,6 +38,7 @@ public class ChatService {
     private final OccurrenceService occurrenceService;
     private final MessageService messageService;
     private final ModelMapper modelMapper;
+    private final RestTemplate restTemplate;
 
     public ChatResponse generate(ChatRequestDTO request, String occurrenceId) {
         OccurrenceResponseDTO occurrenceResponse = occurrenceService.getById(occurrenceId);
@@ -52,7 +53,7 @@ public class ChatService {
         LOGGER.info("Inserting {} to the database", msg);
         messageService.saveOllama(msg, occurrenceId);
         OllamaApi.ChatRequest build =
-                OllamaApi.ChatRequest.builder(model).withMessages(messages).build();
+                OllamaApi.ChatRequest.builder("llama3").withMessages(messages).build();
         ChatResponse response = new OllamaApi().chat(build);
         messages.add(Message.builder(Message.Role.ASSISTANT)
                 .withContent(response.message().content()).build());
@@ -85,7 +86,6 @@ public class ChatService {
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("contents", contents);
 
-        RestTemplate restTemplate = new RestTemplate();
         HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
 

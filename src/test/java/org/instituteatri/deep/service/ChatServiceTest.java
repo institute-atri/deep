@@ -3,33 +3,30 @@ package org.instituteatri.deep.service;
 import org.instituteatri.deep.dto.request.ChatRequestDTO;
 import org.instituteatri.deep.dto.response.ChatResponseDTO;
 import org.instituteatri.deep.dto.response.OccurrenceResponseDTO;
-import org.instituteatri.deep.model.Message;
 import org.instituteatri.deep.model.Occurrence;
 import org.instituteatri.deep.model.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ChatServiceTest {
-
-    private final TestRestTemplate template = new TestRestTemplate();
 
     @Mock
     private OccurrenceService occurrenceService;
@@ -43,21 +40,23 @@ class ChatServiceTest {
     @InjectMocks
     private ChatService chatService;
 
+    @Mock
+    private RestTemplate template;
 
     @Test
-    void generate_shouldGenerateChatResponseAndSaveMessages() {
+    void generateGemini_shouldGenerateChatResponseAndSaveMessages() {
         OccurrenceResponseDTO occurrenceResponseDTO = OccurrenceResponseDTO.builder()
                 .id("1")
                 .name("Roubo")
                 .description("Roubo na Avenida Y")
                 .build();
 
-        Message message = Message.builder()
+        org.instituteatri.deep.model.Message message = org.instituteatri.deep.model.Message.builder()
                 .role(Role.USER)
                 .content("Initial message")
                 .build();
 
-        List<Message> messages = new ArrayList<>();
+        List<org.instituteatri.deep.model.Message> messages = new ArrayList<>();
         messages.add(message);
         Occurrence occurrence = Occurrence.builder()
                 .id("1")
@@ -67,28 +66,64 @@ class ChatServiceTest {
                 .build();
 
         when(occurrenceService.getById("1")).thenReturn(occurrenceResponseDTO);
-        when(modelMapper.map(Mockito.any(OccurrenceResponseDTO.class), Mockito.eq(Occurrence.class))).thenReturn(occurrence);
+        when(modelMapper.map(any(OccurrenceResponseDTO.class), eq(Occurrence.class))).thenReturn(occurrence);
 
         ChatRequestDTO request = ChatRequestDTO.builder().message("Hello").build();
 
-        String apiResponseBody = "{\"contents\": [{\"parts\": [{\"text\": \"Hi there!\"}]}]}";
+        String apiResponseBody = "{\"candidates\": [{\"content\": {\"parts\": [{\"text\": \"Hi there!\"}]}}]}";
         ResponseEntity<String> apiResponse = ResponseEntity.ok(apiResponseBody);
 
         when(template.exchange(
-                        anyString(),
-                        HttpMethod.POST,
-                        any(HttpEntity.class),
-                        eq(String.class)
-                )
-        ).thenReturn(apiResponse);
+                anyString(),
+                eq(HttpMethod.POST),
+                any(HttpEntity.class),
+                eq(String.class)
+        )).thenReturn(apiResponse);
 
         ChatResponseDTO chatResponse = chatService.generateGemini(request, "1");
 
         verify(occurrenceService).getById("1");
         verify(modelMapper).map(occurrenceResponseDTO, Occurrence.class);
-        verify(messageService).saveGemini(any(org.instituteatri.deep.model.Message.class));
-//        verify(template).exchange(eq(url), eq(HttpMethod.POST), any(HttpEntity.class), eq(String.class));
+        verify(messageService, times(2)).saveGemini(any(org.instituteatri.deep.model.Message.class));
 
         assertEquals("Hi there!", chatResponse.getText());
+    }
+
+    @Test
+    void generateOllama_shouldGenerateChatResponseAndSaveMessages() {
+        OccurrenceResponseDTO occurrenceResponseDTO = OccurrenceResponseDTO.builder()
+                .id("1")
+                .name("Roubo")
+                .description("Roubo na Avenida Y")
+                .build();
+
+        org.instituteatri.deep.model.Message message = org.instituteatri.deep.model.Message.builder()
+                .role(Role.USER)
+                .content("Initial message")
+                .build();
+
+        List<org.instituteatri.deep.model.Message> messages = new ArrayList<>();
+        messages.add(message);
+        Occurrence occurrence = Occurrence.builder()
+                .id("1")
+                .name("Roubo")
+                .description("Roubo na Avenida Y")
+                .messages(messages)
+                .build();
+
+        when(occurrenceService.getById("1")).thenReturn(occurrenceResponseDTO);
+        when(modelMapper.map(any(OccurrenceResponseDTO.class), eq(Occurrence.class))).thenReturn(occurrence);
+
+        ChatRequestDTO mockChatRequestDTO = ChatRequestDTO.builder()
+                .message("Hello")
+                .build();
+
+        OllamaApi.ChatResponse chatResponse = chatService.generate(mockChatRequestDTO, "1");
+
+        verify(occurrenceService).getById("1");
+        verify(modelMapper).map(occurrenceResponseDTO, Occurrence.class);
+        verify(messageService, times(2)).saveOllama(any(), eq("1"));
+
+        assertThat(chatResponse.message().content()).isNotEmpty();
     }
 }
