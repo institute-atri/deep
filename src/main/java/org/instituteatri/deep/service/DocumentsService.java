@@ -24,10 +24,10 @@ public class DocumentsService {
     private final ModelMapper modelMapper;
 
 
-    public List<DocumentsResponseDTO> getDocumentsByCaseId(String caseId) {
-        List<DocumentsModel> documents = documentsRepository.findByCaseId(caseId);
+    public List<DocumentsResponseDTO> getDocumentsByOccurrenceId(String occurrenceId) {
+        List<DocumentsModel> documents = documentsRepository.findByOccurrenceId(occurrenceId);
         if (documents.isEmpty()) {
-            logger.error("Documents with case ID {} not found", caseId);
+            logger.error("Documents with occurrence ID {} not found", occurrenceId);
             return new ArrayList<>();
         } else {
             return documents.stream()

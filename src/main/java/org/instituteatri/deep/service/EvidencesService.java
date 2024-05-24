@@ -20,10 +20,10 @@ public class EvidencesService {
     private final EvidencesRepository evidencesRepository;
     private final ModelMapper modelMapper;
 
-public List<EvidencesResponseDTO> getEvidenceByCaseId(String caseId) {
-        List<EvidencesModel> evidences = evidencesRepository.findByCaseId(caseId);
+public List<EvidencesResponseDTO> getEvidenceByOccurrenceId(String occurrenceId) {
+        List<EvidencesModel> evidences = evidencesRepository.findByOccurrenceId(occurrenceId);
         if (evidences.isEmpty()) {
-            logger.error("Evidences with case ID {} not found", caseId);
+            logger.error("Evidences with occurrence ID {} not found", occurrenceId);
             return new ArrayList<>();
         } else {
             return evidences.stream()
