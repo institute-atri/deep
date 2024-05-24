@@ -12,7 +12,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/documents")
+@RequestMapping("/v1/documents")
 @RequiredArgsConstructor
 public class DocumentsController {
 

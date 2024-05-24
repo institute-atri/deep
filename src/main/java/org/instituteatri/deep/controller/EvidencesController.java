@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/evidences")
+@RequestMapping("/v1/evidences")
 @RequiredArgsConstructor
 public class EvidencesController {
 
