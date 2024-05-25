@@ -2,7 +2,7 @@ package org.instituteatri.deep.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.request.UpdateUserRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.service.UserService;
@@ -26,14 +26,13 @@ public class UserController {
 
     @GetMapping("/find/{id}")
     public ResponseEntity<UserResponseDTO> getByUserId(@PathVariable String id) {
-        UserResponseDTO user = userService.getByUserId(id);
-        return ResponseEntity.ok().body(user);
+        return userService.getByUserId(id);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<TokenResponseDTO> updateUser(
             @PathVariable String id,
-            @RequestBody @Valid RegisterRequestDTO registerRequestDTO,
+            @RequestBody @Valid UpdateUserRequestDTO registerRequestDTO,
             Authentication authentication
     ) {
         return userService.updateUser(id, registerRequestDTO, authentication);
