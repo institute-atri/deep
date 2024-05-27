@@ -19,34 +19,34 @@ public class DocumentsController {
     private final DocumentsService documentsService;
     private static final Logger logger = LoggerFactory.getLogger(DocumentsController.class);
 
-    @PostMapping("/create")
+    @PostMapping("/create-document")
     ResponseEntity<DocumentsResponseDTO> createDocument(@RequestBody DocumentsResponseDTO request) {
         DocumentsResponseDTO response = documentsService.createDocuments(request);
         logger.info("Creating document with ID {}", request.getId());
         return ResponseEntity.ok(documentsService.createDocuments(request));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/find-document{id}")
     public ResponseEntity<DocumentsResponseDTO> getDocumentById(@PathVariable String id) {
         logger.info("Getting document by ID {}", id);
         return ResponseEntity.ok(documentsService.getDocumentsById(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-document/{id}")
     public ResponseEntity<Void> deleteDocumentById(@PathVariable String id) {
         documentsService.deleteDocumentById(id);
         logger.info("Deleting document by ID {}", id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update-document/{id}")
     public ResponseEntity<DocumentsResponseDTO> updateDocumentById(@RequestBody DocumentsResponseDTO request) {
         documentsService.updateDocumentsById(request);
         logger.info("Updating document by ID {}", request.getId());
         return ResponseEntity.ok(documentsService.updateDocumentsById(request));
     }
 
-    @GetMapping("/{occurrenceId}")
+    @GetMapping("/find-document/{occurrenceId}")
     public ResponseEntity<List<DocumentsResponseDTO>> getDocumentsByOccurrenceId(@PathVariable String occurrenceId) {
         logger.info("Getting documents by occurrence ID {}", occurrenceId);
         List<DocumentsResponseDTO> documents = documentsService.getDocumentsByOccurrenceId(occurrenceId);

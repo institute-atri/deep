@@ -21,7 +21,7 @@ public class EvidencesController {
     private static final Logger logger = LoggerFactory.getLogger(EvidencesController.class);
 
 
-    @PostMapping("/create")
+    @PostMapping("/create-evidence")
 
 public ResponseEntity<EvidencesResponseDTO> createEvidence(@RequestBody EvidencesResponseDTO request) {
 EvidencesResponseDTO response = evidencesService.createEvidences(request);
@@ -29,27 +29,27 @@ EvidencesResponseDTO response = evidencesService.createEvidences(request);
         return ResponseEntity.ok(evidencesService.createEvidences(request));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/find-evidence/{id}")
     public ResponseEntity<EvidencesResponseDTO> getEvidenceById(@PathVariable String id) {
         logger.info("Getting evidence by ID {}", id);
         return ResponseEntity.ok(evidencesService.getEvidenceById(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteEvidenceById(@PathVariable String id) {
         evidencesService.deleteEvidenceById(id);
         logger.info("Deleting evidence by ID {}", id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/update-evidence/{id}")
     public ResponseEntity<EvidencesResponseDTO> updateEvidenceById(@RequestBody EvidencesResponseDTO request) {
         evidencesService.updateEvidencesById(request);
         logger.info("Updating evidence by ID {}", request.getId());
         return ResponseEntity.ok(evidencesService.updateEvidencesById(request));
     }
 
-    @GetMapping("/{occurrenceId}")
+    @GetMapping("/find-evidence/{occurrenceId}")
     public ResponseEntity<List<EvidencesResponseDTO>> getEvidencesByOccurrenceId(@PathVariable String occurrenceId) {
         logger.info("Getting evidences by occurrence ID {}", occurrenceId);
         List<EvidencesResponseDTO> evidences = evidencesService.getEvidenceByOccurrenceId(occurrenceId);
