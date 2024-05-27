@@ -37,13 +37,13 @@ public class EvidencesService {
         return modelMapper.map(evidence, EvidencesResponseDTO.class);
     }
 
-    // Update evidence by ID
+    // Update evidences by ID
     public EvidencesResponseDTO updateEvidencesById(EvidencesResponseDTO request) {
         logger.info("Updating evidence with ID {}", request.getId());
         return saveAndMapEvidences(request);
     }
 
-    // Create evidence
+    // Create evidences
      public EvidencesResponseDTO createEvidences(EvidencesResponseDTO request) {
          logger.info("Creating evidence with ID {}", request.getId());
          return saveAndMapEvidences(request);
@@ -61,7 +61,7 @@ public class EvidencesService {
                     .toList();
         }
     }
-     // Delete evidence by ID
+     // Delete evidences by ID
     public void deleteEvidenceById(String id) {
         logger.info("Deleting evidence with ID {}", id);
         evidencesRepository.deleteById(id);
