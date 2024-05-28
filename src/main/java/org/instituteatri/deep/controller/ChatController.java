@@ -19,15 +19,15 @@ public class ChatController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
 
     @PostMapping("/ai/generate/{occurrenceId}")
-    public ResponseEntity<OllamaApi.ChatResponse> generate(@RequestBody ChatRequestDTO request,
-            @PathVariable String occurrenceId) {
+    public ResponseEntity<OllamaApi.ChatResponse> generateMessageFromOllama(@RequestBody ChatRequestDTO request,
+                                                                            @PathVariable String occurrenceId) {
         LOGGER.info("Received request to generate a chat-ollama response");
-        return ResponseEntity.ok(service.generate(request, occurrenceId));
+        return ResponseEntity.ok(service.generateMessageResponseFromOllama(request, occurrenceId));
     }
 
     @PostMapping("/ai-gemini/generate/{occurrenceId}")
-    public ResponseEntity<ChatResponseDTO> generateGemini(@RequestBody ChatRequestDTO request, @PathVariable String occurrenceId) {
+    public ResponseEntity<ChatResponseDTO> generateMessageFromGemini(@RequestBody ChatRequestDTO request, @PathVariable String occurrenceId) {
         LOGGER.info("Received request to generate a chat-gemini response");
-        return ResponseEntity.ok(service.generateGemini(request, occurrenceId));
+        return ResponseEntity.ok(service.generateMessageResponseFromGemini(request, occurrenceId));
     }
 }

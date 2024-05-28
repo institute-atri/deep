@@ -29,7 +29,7 @@ public class Message {
     private String id;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private ActorRole actorRole;
     @Column(columnDefinition = "TEXT")
     private String content;
     private Instant createdAt;

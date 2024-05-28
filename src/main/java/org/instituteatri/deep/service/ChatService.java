@@ -7,7 +7,7 @@ import org.instituteatri.deep.dto.request.ChatRequestDTO;
 import org.instituteatri.deep.dto.response.ChatResponseDTO;
 import org.instituteatri.deep.dto.response.OccurrenceResponseDTO;
 import org.instituteatri.deep.model.Occurrence;
-import org.instituteatri.deep.model.Role;
+import org.instituteatri.deep.model.ActorRole;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,29 +40,25 @@ public class ChatService {
     private final ModelMapper modelMapper;
     private final RestTemplate restTemplate;
 
-    public ChatResponse generate(ChatRequestDTO request, String occurrenceId) {
+    public ChatResponse generateMessageResponseFromOllama(ChatRequestDTO request, String occurrenceId) {
         OccurrenceResponseDTO occurrenceResponse = occurrenceService.getById(occurrenceId);
         Occurrence occurrence = modelMapper.map(occurrenceResponse, Occurrence.class);
         List<Message> messages = new ArrayList<>();
+
+        // get message from occurrence and parse to OllamaApi.Message
         occurrence.getMessages().forEach(x -> {
-            Message msg = Message.builder(Message.Role.valueOf(x.getRole().toString())).withContent(x.getContent()).build();
+            Message msg = Message.builder(Message.Role.valueOf(x.getActorRole().toString())).withContent(x.getContent()).build();
             messages.add(msg);
         });
         Message msg = Message.builder(Message.Role.USER).withContent(request.getMessage()).build();
         messages.add(msg);
-        LOGGER.info("Inserting {} to the database", msg);
-        messageService.saveOllama(msg, occurrenceId);
-        OllamaApi.ChatRequest build =
-                OllamaApi.ChatRequest.builder("llama3").withMessages(messages).build();
-        ChatResponse response = new OllamaApi().chat(build);
-        messages.add(Message.builder(Message.Role.ASSISTANT)
-                .withContent(response.message().content()).build());
-        LOGGER.info("Inserting {} to the database", msg);
-        messageService.saveOllama(response.message(), occurrenceId);
+        messageService.saveMessageFromOllama(msg, occurrenceId);
+        ChatResponse response = getChatResponse(messages, msg);
+        messageService.saveMessageFromOllama(response.message(), occurrenceId);
         return response;
     }
 
-    public ChatResponseDTO generateGemini(ChatRequestDTO request, String occurrenceId) {
+    public ChatResponseDTO generateMessageResponseFromGemini(ChatRequestDTO request, String occurrenceId) {
         OccurrenceResponseDTO occurrenceResponse = occurrenceService.getById(occurrenceId);
         Occurrence occurrence = modelMapper.map(occurrenceResponse, Occurrence.class);
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GOOGLE_API_KEY;
@@ -72,16 +68,16 @@ public class ChatService {
 
         List<Map<String, Object>> contents = new ArrayList<>();
         occurrence.getMessages().forEach(x -> {
-            contents.add(Map.of("role", x.getRole().toString(), "parts", List.of(Map.of("text", x.getContent()))));
+            contents.add(Map.of("role", x.getActorRole().toString(), "parts", List.of(Map.of("text", x.getContent()))));
         });
         contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", request.getMessage()))));
 
         org.instituteatri.deep.model.Message msgUser = org.instituteatri.deep.model.Message.builder()
-                .role(Role.USER)
+                .actorRole(ActorRole.USER)
                 .occurrence(occurrence)
                 .content(request.getMessage())
                 .build();
-        messageService.saveGemini(msgUser);
+        messageService.saveMessageFromGemini(msgUser);
 
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("contents", contents);
@@ -95,13 +91,13 @@ public class ChatService {
             // Parse to json and get text
             text = getString(responseBody, text);
             org.instituteatri.deep.model.Message msgAI = org.instituteatri.deep.model.Message.builder()
-                    .role(Role.MODEL)
+                    .actorRole(ActorRole.MODEL)
                     .occurrence(occurrence)
                     .content(text)
                     .build();
-            messageService.saveGemini(msgAI);
+            messageService.saveMessageFromGemini(msgAI);
         } else {
-            System.out.println("Request failed with status code: " + response.getStatusCode());
+            LOGGER.error("Request failed with status code: " + response.getStatusCode());
         }
         return ChatResponseDTO.builder().text(text).build();
     }
@@ -122,5 +118,15 @@ public class ChatService {
             LOGGER.error(e.getMessage());
         }
         return text;
+    }
+
+    private ChatResponse getChatResponse(List<Message> messages, Message msg) {
+        OllamaApi.ChatRequest build =
+                OllamaApi.ChatRequest.builder(model).withMessages(messages).build();
+        ChatResponse response = new OllamaApi().chat(build);
+        messages.add(Message.builder(Message.Role.ASSISTANT)
+                .withContent(response.message().content()).build());
+        LOGGER.info("Inserting {} to the database", msg);
+        return response;
     }
 }

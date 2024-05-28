@@ -31,11 +31,11 @@ public class ChatControllerTest {
     public void generateGemini_WhenChatRequest_ThenReturnChatResponse() {
         ChatResponseDTO expectedResponse = ChatResponseDTO.builder().text("Ok").build();
 
-        when(chatService.generateGemini(any(ChatRequestDTO.class), anyString())).thenReturn(expectedResponse);
+        when(chatService.generateMessageResponseFromGemini(any(ChatRequestDTO.class), anyString())).thenReturn(expectedResponse);
         ChatRequestDTO request = ChatRequestDTO.builder().build();
         String occurrenceId = "1";
 
-        ResponseEntity<ChatResponseDTO> response = chatController.generateGemini(request, occurrenceId);
+        ResponseEntity<ChatResponseDTO> response = chatController.generateMessageFromGemini(request, occurrenceId);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

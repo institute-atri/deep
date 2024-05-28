@@ -4,7 +4,7 @@ import org.instituteatri.deep.dto.request.ChatRequestDTO;
 import org.instituteatri.deep.dto.response.ChatResponseDTO;
 import org.instituteatri.deep.dto.response.OccurrenceResponseDTO;
 import org.instituteatri.deep.model.Occurrence;
-import org.instituteatri.deep.model.Role;
+import org.instituteatri.deep.model.ActorRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,7 +52,7 @@ class ChatServiceTest {
                 .build();
 
         org.instituteatri.deep.model.Message message = org.instituteatri.deep.model.Message.builder()
-                .role(Role.USER)
+                .actorRole(ActorRole.USER)
                 .content("Initial message")
                 .build();
 
@@ -80,11 +80,11 @@ class ChatServiceTest {
                 eq(String.class)
         )).thenReturn(apiResponse);
 
-        ChatResponseDTO chatResponse = chatService.generateGemini(request, "1");
+        ChatResponseDTO chatResponse = chatService.generateMessageResponseFromGemini(request, "1");
 
         verify(occurrenceService).getById("1");
         verify(modelMapper).map(occurrenceResponseDTO, Occurrence.class);
-        verify(messageService, times(2)).saveGemini(any(org.instituteatri.deep.model.Message.class));
+        verify(messageService, times(2)).saveMessageFromGemini(any(org.instituteatri.deep.model.Message.class));
 
         assertEquals("Hi there!", chatResponse.getText());
     }
@@ -98,7 +98,7 @@ class ChatServiceTest {
                 .build();
 
         org.instituteatri.deep.model.Message message = org.instituteatri.deep.model.Message.builder()
-                .role(Role.USER)
+                .actorRole(ActorRole.USER)
                 .content("Initial message")
                 .build();
 
@@ -118,11 +118,11 @@ class ChatServiceTest {
                 .message("Hello")
                 .build();
 
-        OllamaApi.ChatResponse chatResponse = chatService.generate(mockChatRequestDTO, "1");
+        OllamaApi.ChatResponse chatResponse = chatService.generateMessageResponseFromOllama(mockChatRequestDTO, "1");
 
         verify(occurrenceService).getById("1");
         verify(modelMapper).map(occurrenceResponseDTO, Occurrence.class);
-        verify(messageService, times(2)).saveOllama(any(), eq("1"));
+        verify(messageService, times(2)).saveMessageFromOllama(any(), eq("1"));
 
         assertThat(chatResponse.message().content()).isNotEmpty();
     }

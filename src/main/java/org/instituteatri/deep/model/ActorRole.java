@@ -1,6 +1,6 @@
 package org.instituteatri.deep.model;
 
-public enum Role {
+public enum ActorRole {
 
     USER, ASSISTANT, MODEL, SYSTEM
 }

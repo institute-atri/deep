@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.instituteatri.deep.model.Role;
+import org.instituteatri.deep.model.ActorRole;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +13,7 @@ import org.instituteatri.deep.model.Role;
 @Builder
 public class MessageResponseDTO {
 
-    private Role role;
+    private ActorRole actorRole;
     private String content;
     private Instant createdAt;
 }
