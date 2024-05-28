@@ -26,7 +26,7 @@ public class DocumentsController {
         return ResponseEntity.ok(documentsService.createDocuments(request));
     }
 
-    @GetMapping("/find-document{id}")
+    @GetMapping("/find-document/{id}")
     public ResponseEntity<DocumentsResponseDTO> getDocumentById(@PathVariable String id) {
         logger.info("Getting document by ID {}", id);
         return ResponseEntity.ok(documentsService.getDocumentsById(id));
