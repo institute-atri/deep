@@ -1,7 +1,7 @@
 package org.instituteatri.deep.service;
 
 import lombok.RequiredArgsConstructor;
-import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.request.UpdateUserRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.dto.response.UserResponseDTO;
 import org.instituteatri.deep.exception.user.UserNotFoundException;
@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,17 +36,24 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserResponseDTO> response = new ArrayList<>();
 
+        List<User> users = userRepository.findAll();
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users found");
+        }
+
+        List<UserResponseDTO> response = new ArrayList<>();
         users.forEach(x -> response.add(modelMapper.map(x, UserResponseDTO.class)));
+
         return ResponseEntity.ok(response);
     }
 
-    public UserResponseDTO getByUserId(String id) {
-        return userRepository.findById(id)
-                .map(user -> modelMapper.map(user, UserResponseDTO.class))
-                .orElseThrow(() -> new UserNotFoundException(id));
+    public ResponseEntity<UserResponseDTO> getByUserId(String userId) {
+
+        User existingUser = findUserByIdOrThrow(userId);
+
+        UserResponseDTO userResponse = modelMapper.map(existingUser, UserResponseDTO.class);
+        return ResponseEntity.ok(userResponse);
     }
 
     @Transactional
@@ -80,7 +88,7 @@ public class UserService {
      * @return A ResponseEntity containing the ResponseDTO with the access and refresh tokens.
      */
     @Transactional
-    public ResponseEntity<TokenResponseDTO> updateUser(String userId, RegisterRequestDTO updatedUserDto, Authentication authentication) {
+    public ResponseEntity<TokenResponseDTO> updateUser(String userId, UpdateUserRequestDTO updatedUserDto, Authentication authentication) {
 
         User existingUser = findUserByIdOrThrow(userId);
 
@@ -101,29 +109,29 @@ public class UserService {
 
     private User findUserByIdOrThrow(String userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
+                .orElseThrow(() -> new UserNotFoundException("Could not find user with id:" + userId));
     }
 
-    private void updateUserProperties(User existingUser, RegisterRequestDTO updatedUserDto) {
+    protected void updateUserProperties(User existingUser, UpdateUserRequestDTO updatedUserDto) {
         updateField(existingUser::setName, existingUser.getName(), updatedUserDto.name());
         updateField(existingUser::setEmail, existingUser.getEmail(), updatedUserDto.email());
         updatePassword(existingUser, updatedUserDto.password());
     }
 
-    private void updatePassword(User existingUser, String newPassword) {
-        if (newPassword != null && !passwordEncoder.matches(newPassword, existingUser.getPassword())) {
+    protected void updatePassword(User existingUser, String newPassword) {
+        if (StringUtils.hasText(newPassword) && !passwordEncoder.matches(newPassword, existingUser.getPassword())) {
             String encryptedPassword = passwordEncoder.encode(newPassword);
             existingUser.setPassword(encryptedPassword);
         }
     }
 
-    private <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
+    protected <T> void updateField(Consumer<T> setter, T currentValue, T newValue) {
         if (newValue != null && !newValue.equals(currentValue)) {
             setter.accept(newValue);
         }
     }
 
-    private void validateEmailUpdate(User existingUser, RegisterRequestDTO updatedUserDto) {
+    private void validateEmailUpdate(User existingUser, UpdateUserRequestDTO updatedUserDto) {
         String newEmail = updatedUserDto.email();
 
         emailAlreadyValidationStrategy.validate(
