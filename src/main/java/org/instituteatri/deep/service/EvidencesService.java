@@ -20,26 +20,7 @@ public class EvidencesService {
     private final EvidencesRepository evidencesRepository;
     private final ModelMapper modelMapper;
 
-public List<EvidencesResponseDTO> getEvidenceByCaseId(String caseId) {
-        List<EvidencesModel> evidences = evidencesRepository.findByCaseId(caseId);
-        if (evidences.isEmpty()) {
-            logger.error("Evidences with case ID {} not found", caseId);
-            return new ArrayList<>();
-        } else {
-            return evidences.stream()
-                    .map(evidence -> modelMapper.map(evidence, EvidencesResponseDTO.class))
-                    .toList();
-        }
-    }
-
-    public EvidencesResponseDTO createEvidences(EvidencesResponseDTO request) {
-        EvidencesModel evidence = modelMapper.map(request, EvidencesModel.class);
-        evidence.setCreatedAt(Instant.now());
-        logger.info("Creating evidence with ID {}", evidence.getId());
-        evidencesRepository.save(evidence);
-        return modelMapper.map(evidence, EvidencesResponseDTO.class);
-    }
-
+    // Find evidence by ID
     public EvidencesResponseDTO getEvidenceById(String id) {
         EvidencesModel evidence = evidencesRepository.findById(id).orElse(null);
         if (evidence == null) {
@@ -48,16 +29,39 @@ public List<EvidencesResponseDTO> getEvidenceByCaseId(String caseId) {
         }
         return modelMapper.map(evidence, EvidencesResponseDTO.class);
     }
-
-    public EvidencesResponseDTO updateEvidencesById(EvidencesResponseDTO request) {
+    // This method is used to save and map evidences, it is used by both create and update methods
+    private EvidencesResponseDTO saveAndMapEvidences(EvidencesResponseDTO request) {
         EvidencesModel evidence = modelMapper.map(request, EvidencesModel.class);
         evidence.setCreatedAt(Instant.now());
-        logger.info("Updating evidence with ID {}", evidence.getId());
         evidencesRepository.save(evidence);
         return modelMapper.map(evidence, EvidencesResponseDTO.class);
-
     }
 
+    // Update evidences by ID
+    public EvidencesResponseDTO updateEvidencesById(EvidencesResponseDTO request) {
+        logger.info("Updating evidence with ID {}", request.getId());
+        return saveAndMapEvidences(request);
+    }
+
+    // Create evidences
+     public EvidencesResponseDTO createEvidences(EvidencesResponseDTO request) {
+         logger.info("Creating evidence with ID {}", request.getId());
+         return saveAndMapEvidences(request);
+    }
+
+    // Find evidences by occurrence ID
+    public List<EvidencesResponseDTO> getEvidenceByOccurrenceId(String occurrenceId) {
+        List<EvidencesModel> evidences = evidencesRepository.findByOccurrenceId(occurrenceId);
+        if (evidences.isEmpty()) {
+            logger.error("Evidences with occurrence ID {} not found", occurrenceId);
+            return new ArrayList<>();
+        } else {
+            return evidences.stream()
+                    .map(evidence -> modelMapper.map(evidence, EvidencesResponseDTO.class))
+                    .toList();
+        }
+    }
+     // Delete evidences by ID
     public void deleteEvidenceById(String id) {
         logger.info("Deleting evidence with ID {}", id);
         evidencesRepository.deleteById(id);

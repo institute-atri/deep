@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 public interface EvidencesRepository extends JpaRepository<EvidencesModel, String>{
-    List<EvidencesModel> findByCaseId(String caseId);
+    List<EvidencesModel> findByOccurrenceId(String occurrenceId);
 }
