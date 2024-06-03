@@ -49,3 +49,4 @@ public class OccurrenceController {
         return ResponseEntity.noContent().build();
     }
 }
+

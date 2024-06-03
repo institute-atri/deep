@@ -1,6 +1,7 @@
 package org.instituteatri.deep.infrastructure.security;
 
 import lombok.RequiredArgsConstructor;
+import org.instituteatri.deep.infrastructure.security.config.DefendantConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,6 +28,7 @@ public class SecurityConfigurations {
     final AuthSecurityConfig authSecurityConfig;
     final UserSecurityConfig userSecurityConfig;
     final CustomLogoutHandler logoutHandler;
+    final DefendantConfig defendantConfig;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -61,6 +63,7 @@ public class SecurityConfigurations {
 
         applyAuthSecurityConfig(httpSecurity);
         applyUserSecurityConfig(httpSecurity);
+        applyDefendantConfig(httpSecurity);
 
         return httpSecurity
                 .csrf(csrf -> csrf.csrfTokenRepository(customizeCookieCsrfTokenRepository()))
@@ -116,6 +119,9 @@ public class SecurityConfigurations {
                         .secure(true)
         );
         return tokenRepository;
+    }
+    private void applyDefendantConfig(HttpSecurity http) throws Exception {
+        defendantConfig.configure(http);
     }
 }
 
