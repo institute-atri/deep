@@ -22,8 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DefendantController {
 
-    private final DefendantService defendantService;
     private static final Logger LOGGER = LoggerFactory.getLogger(DefendantController.class);
+    private final DefendantService defendantService;
 
     @GetMapping
     public ResponseEntity<List<DefendantDTO>> getAll(){
@@ -31,6 +31,7 @@ public class DefendantController {
         LOGGER.info("Request to get all defendants received");
         return ResponseEntity.ok(defendantDTOList);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<DefendantDTO> getById(@PathVariable String id){
         DefendantDTO defendantDTO = defendantService.getById(id);
@@ -51,7 +52,4 @@ public class DefendantController {
         LOGGER.info("Request to delete a defendant received");
         return ResponseEntity.noContent().build();
     }
-
-
-
 }

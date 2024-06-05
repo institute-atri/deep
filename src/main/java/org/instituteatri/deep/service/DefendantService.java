@@ -22,30 +22,30 @@ public class DefendantService {
     private final DefendantRepository defendantRepository;
     private final ModelMapper modelMapper;
 
-
     public List<DefendantDTO> getAll(){
-        List<Defendant> defendantDTOList = defendantRepository.findAll();
+        List<Defendant> defendantList = defendantRepository.findAll();
         List<DefendantDTO> defendantResponse = new ArrayList<>();
-        defendantResponse.forEach(x -> defendantResponse.add(modelMapper.map(x, DefendantDTO.class)));
+        defendantList.forEach(x -> defendantResponse.add(modelMapper.map(x, DefendantDTO.class)));
         return defendantResponse;
     }
+
     public DefendantDTO getById(String id){
         Defendant defendant = defendantRepository.findById(id)
                 .orElseThrow(() -> new BadRequestException("Defendant not found!"));
         return modelMapper.map(defendant, DefendantDTO.class);
     }
+
     @Transactional
     public DefendantDTO save(DefendantDTO defendantDTO){
         Defendant defendant = modelMapper.map(defendantDTO, Defendant.class);
-        LOGGER.info("Inserting {} to the database", defendant);
         Defendant newDefendant = defendantRepository.save(defendant);
+        LOGGER.info("Inserting {} to the database", defendant);
         return modelMapper.map(newDefendant, DefendantDTO.class);
     }
+
     public void delete(String id){
-        LOGGER.info("Deleting ID: {} from the database", id);
         defendantRepository.deleteById(id);
+        LOGGER.info("Deleting ID: {} from the database", id);
         LOGGER.info("successfully deleted");
     }
-
-
 }
