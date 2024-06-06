@@ -1,6 +1,7 @@
 package org.instituteatri.deep.controller;
 
 import org.instituteatri.deep.dto.request.ChatRequestDTO;
+import org.instituteatri.deep.dto.response.ChatResponseDTO;
 import org.instituteatri.deep.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,15 @@ public class ChatController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
 
     @PostMapping("/ai/generate/{occurrenceId}")
-    public ResponseEntity<OllamaApi.ChatResponse> generate(@RequestBody ChatRequestDTO request,
-            @PathVariable String occurrenceId) {
-        LOGGER.info("Received request to generate a chat response");
-        return ResponseEntity.ok(service.generate(request, occurrenceId));
+    public ResponseEntity<OllamaApi.ChatResponse> generateMessageFromOllama(@RequestBody ChatRequestDTO request,
+                                                                            @PathVariable String occurrenceId) {
+        LOGGER.info("Received request to generate a chat-ollama response");
+        return ResponseEntity.ok(service.generateMessageResponseFromOllama(request, occurrenceId));
+    }
+
+    @PostMapping("/ai-gemini/generate/{occurrenceId}")
+    public ResponseEntity<ChatResponseDTO> generateMessageFromGemini(@RequestBody ChatRequestDTO request, @PathVariable String occurrenceId) {
+        LOGGER.info("Received request to generate a chat-gemini response");
+        return ResponseEntity.ok(service.generateMessageResponseFromGemini(request, occurrenceId));
     }
 }
