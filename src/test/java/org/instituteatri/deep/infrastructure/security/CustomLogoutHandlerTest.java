@@ -2,25 +2,28 @@ package org.instituteatri.deep.infrastructure.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.instituteatri.deep.exception.user.TokenGenerationException;
 import org.instituteatri.deep.model.token.Token;
 import org.instituteatri.deep.repository.TokenRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.openMocks;
 
+@ExtendWith(MockitoExtension.class)
 class CustomLogoutHandlerTest {
 
     @Mock
@@ -29,67 +32,144 @@ class CustomLogoutHandlerTest {
     @Mock
     private TokenRepository tokenRepository;
 
+    @Mock
+    private HttpServletRequest request;
+
+    @Mock
+    private HttpServletResponse response;
+
+    @Mock
+    private Authentication authentication;
+
+    @Mock
+    PrintWriter writer;
+
     @InjectMocks
     private CustomLogoutHandler customLogoutHandler;
 
-    @BeforeEach
-    void setUp() {
-        openMocks(this);
+    String validToken = "validToken";
+    String invalidToken = "invalidToken";
+    String tokenExpiredMessage = "Token is expired";
+
+    @Nested
+    @DisplayName("Tests Logout Handler")
+    class testLogoutHandler {
+
+        @Test
+        @DisplayName("Should logout successfully when valid token is provided")
+        void shouldLogoutSuccessfullyWithValidToken() {
+            // Arrange
+            Token storedToken = new Token();
+
+            when(securityFilter.recoverTokenFromRequest(request)).thenReturn(validToken);
+            when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.of(storedToken));
+
+            // Act
+            customLogoutHandler.logout(request, response, authentication);
+
+            // Assert
+            storedToken.setTokenExpired(true);
+            storedToken.setTokenRevoked(true);
+            verify(tokenRepository).save(storedToken);
+            verify(securityFilter).recoverTokenFromRequest(request);
+            SecurityContextHolder.clearContext();
+        }
+
+
+        @Test
+        @DisplayName("Should handle logout with invalid token by returning unauthorized status")
+        void shouldHandleLogoutWithInvalidTokenByReturningUnauthorizedStatus() throws IOException {
+            // Arrange
+            when(securityFilter.recoverTokenFromRequest(request)).thenReturn(invalidToken);
+            when(tokenRepository.findByTokenValue(invalidToken)).thenReturn(Optional.empty());
+            when(response.getWriter()).thenReturn(writer);
+
+            // Act
+            customLogoutHandler.logout(request, response, authentication);
+
+            // Assert
+            verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            verify(writer).write(tokenExpiredMessage);
+        }
+
+        @Test
+        @DisplayName("Should handle logout with IOException by throwing TokenGenerationException")
+        void shouldHandleLogoutWithIOExceptionByThrowingTokenGenerationException() throws IOException {
+            // Arrange
+            when(securityFilter.recoverTokenFromRequest(request)).thenReturn(invalidToken);
+            when(tokenRepository.findByTokenValue(invalidToken)).thenReturn(Optional.empty());
+            when(response.getWriter()).thenReturn(writer);
+            doThrow(new IOException("IO error")).when(writer).write(tokenExpiredMessage);
+
+            // Act & Assert
+            assertThrows(TokenGenerationException.class, () ->
+                    customLogoutHandler.logout(request, response, authentication));
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests FindTokenByValue Method Tests")
+    class FindTokenByValueTest {
+
+        @Test
+        @DisplayName("Should find token by value when token is found")
+        void shouldFindTokenByValueWhenTokenFound() {
+            // Arrange
+            Token expectedToken = new Token();
+
+            when(tokenRepository.findByTokenValue(validToken)).thenReturn(Optional.of(expectedToken));
+
+            // Act
+            Token actualToken = customLogoutHandler.findTokenByValue(validToken);
+
+            // Assert
+            assertSame(expectedToken, actualToken);
+            verify(tokenRepository).findByTokenValue(validToken);
+        }
+
+        @Test
+        @DisplayName("Should return null when token is not found")
+        void shouldReturnNullWhenTokenNotFound() {
+            // Arrange
+            String tokenNotFound = "tokenNotFound";
+
+            when(tokenRepository.findByTokenValue(tokenNotFound)).thenReturn(Optional.empty());
+
+            // Act
+            Token actualToken = customLogoutHandler.findTokenByValue(tokenNotFound);
+
+            // Assert
+            assertNull(actualToken);
+            verify(tokenRepository).findByTokenValue(tokenNotFound);
+        }
     }
 
     @Test
-    @DisplayName("Logout: Valid Token - Invalidates Token and Logs")
-    void logout_ValidToken_InvalidatesTokenAndLogs() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        Authentication authentication = mock(Authentication.class);
-        String token = "validToken";
-        when(securityFilter.recoverTokenFromRequest(request)).thenReturn(token);
-        when(tokenRepository.findByTokenValue(token)).thenReturn(java.util.Optional.of(new Token()));
-
-        customLogoutHandler.logout(request, response, authentication);
-
-        verify(tokenRepository, times(1)).findByTokenValue(token);
-        verify(tokenRepository, times(1)).save(any(Token.class));
-    }
-
-    @Test
-    @DisplayName("Logout: Invalid Token - Sends Unauthorized Response")
-    void logout_InvalidToken_SendsUnauthorizedResponse() throws Exception {
+    @DisplayName("Should set expired and revoked flags to true and save token")
+    void invalidateToken_shouldSetExpiredAndRevokedToTrueAndSaveToken() {
         // Arrange
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        Authentication authentication = mock(Authentication.class);
-        String token = "invalidToken";
-        when(securityFilter.recoverTokenFromRequest(request)).thenReturn(token);
-        when(tokenRepository.findByTokenValue(token)).thenReturn(java.util.Optional.empty());
-
-        // Use StringWriter to capture the output
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(printWriter);
+        Token invalidateToken = new Token();
 
         // Act
-        customLogoutHandler.logout(request, response, authentication);
+        customLogoutHandler.invalidateToken(invalidateToken);
 
         // Assert
-        verify(tokenRepository, times(1)).findByTokenValue(token);
-        verify(response, times(1)).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        // Assert the content written to the PrintWriter
-        assertEquals("Token is expired", stringWriter.toString());
+        assertTrue(invalidateToken.isTokenExpired(), "Token should be marked as expired");
+        assertTrue(invalidateToken.isTokenRevoked(), "Token should be marked as revoked");
+        verify(tokenRepository).save(invalidateToken);
     }
 
     @Test
-    @DisplayName("Send Unauthorized Response: Writes Unauthorized Response")
-    void sendUnauthorizedResponse_WritesUnauthorizedResponse() throws IOException {
+    @DisplayName("Should set status and write message to response")
+    void sendUnauthorizedResponse_shouldSetStatusAndWriteMessageToResponse() throws IOException {
         // Arrange
-        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+        when(response.getWriter()).thenReturn(writer);
 
         // Act
-        customLogoutHandler.sendUnauthorizedResponse(mockResponse);
+        customLogoutHandler.sendUnauthorizedResponse(response);
 
         // Assert
-        assertEquals(HttpStatus.UNAUTHORIZED.value(), mockResponse.getStatus());
-        assertEquals("Token is expired", mockResponse.getContentAsString());
+        verify(response).setStatus(HttpStatus.UNAUTHORIZED.value());
+        verify(writer).write(tokenExpiredMessage);
     }
 }
