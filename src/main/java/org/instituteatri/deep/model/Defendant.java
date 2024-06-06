@@ -20,6 +20,7 @@ public class Defendant {
     private String id;
 
     private String name;
+    @CPF
     private String dateOfBirth;
     private String idNumber;
 
