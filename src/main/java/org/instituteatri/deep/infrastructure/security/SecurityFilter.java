@@ -39,9 +39,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         try {
             String token = recoverTokenFromRequest(request);
-            if (token != null) {
-                handleAuthentication(token, response);
+            if (token != null && !handleAuthentication(token, response)) {
+                return;
             }
+
             filterChain.doFilter(request, response);
         } catch (Exception e) {
             log.error("[ERROR_FILTER] Error processing security filter: {}", e.getMessage());
@@ -60,22 +61,25 @@ public class SecurityFilter extends OncePerRequestFilter {
         return token;
     }
 
-    public void handleAuthentication(String token, HttpServletResponse response)
-            throws IOException {
-
+    protected boolean handleAuthentication(String token, HttpServletResponse response) throws IOException {
         try {
             String email = tokenService.validateToken(token);
-            UserDetails userDetails = getUserDetailsByEmail(email);
+            UserDetails userDetails = userRepository.findByEmail(email);
             boolean isTokenValid = isTokenValid(token);
 
             if (userDetails != null && isTokenValid) {
                 setAuthenticationInSecurityContext(userDetails);
+                log.info("[USER_AUTHENTICATED] User: {} successfully authenticated with token: {}.", userDetails.getUsername(), token);
+                return true;
             } else {
                 getError(token);
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return false;
             }
         } catch (TokenInvalidException e) {
             handleInvalidToken(response, e);
             getError(token);
+            return false;
         }
     }
 
@@ -92,17 +96,13 @@ public class SecurityFilter extends OncePerRequestFilter {
         return request.getHeader("User-Agent");
     }
 
-    private UserDetails getUserDetailsByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     public boolean isTokenValid(String token) {
         return tokenRepository.findByTokenValue(token)
                 .map(t -> !t.isTokenExpired() && !t.isTokenRevoked())
                 .orElse(false);
     }
 
-    public void setAuthenticationInSecurityContext(UserDetails userDetails) {
+    protected void setAuthenticationInSecurityContext(UserDetails userDetails) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
@@ -111,9 +111,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    public void handleInvalidToken(HttpServletResponse response, TokenInvalidException e)
-            throws IOException {
-
+    private void handleInvalidToken(HttpServletResponse response, TokenInvalidException e) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(e.getMessage());
         log.warn("[TOKEN_INVALID] Invalid token detected: {}", e.getMessage());
