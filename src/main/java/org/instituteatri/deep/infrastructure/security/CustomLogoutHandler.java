@@ -46,7 +46,7 @@ public class CustomLogoutHandler implements LogoutHandler {
         }
     }
 
-    private Token findTokenByValue(String tokenValue) {
+    protected Token findTokenByValue(String tokenValue) {
         Token token = tokenRepository.findByTokenValue(tokenValue).orElse(null);
         if (token == null) {
             log.warn("[TOKEN_EXPIRED] Token not found in repository during logout for value: {}", tokenValue);
@@ -54,13 +54,13 @@ public class CustomLogoutHandler implements LogoutHandler {
         return token;
     }
 
-    private void invalidateToken(Token token) {
+    protected void invalidateToken(Token token) {
         token.setTokenExpired(true);
         token.setTokenRevoked(true);
         tokenRepository.save(token);
     }
 
-    public void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
+    protected void sendUnauthorizedResponse(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.getWriter().write(TOKEN_EXPIRED_MESSAGE);
     }
