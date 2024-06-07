@@ -34,13 +34,13 @@ public class AddressService {
         return modelMapper.map(address, AddressDTO.class);
     }
     @Transactional
-    public AddressDTO save(AddressDTO addressDTO){
+    public AddressDTO saveAddress(AddressDTO addressDTO){
         Address address = modelMapper.map(addressDTO, Address.class);
         Address newAddress = addressRepository.save(address);
         LOGGER.info("Inserting {} to the database", address);
         return modelMapper.map(newAddress, AddressDTO.class);
     }
-    public void delete(String id){
+    public void deleteAddress(String id){
         LOGGER.info("Deleting ID: {} from de database", id);
         addressRepository.deleteById(id);
         LOGGER.info("Address deleted successfully");

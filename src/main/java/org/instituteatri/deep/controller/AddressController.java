@@ -23,7 +23,7 @@ public class AddressController {
         LOGGER.info("Request to get all addresses received");
         return ResponseEntity.ok(addressDTO);
     }
-    @GetMapping("/{id}")
+    @GetMapping("search/{id}")
     public ResponseEntity<AddressDTO> getById(@PathVariable String id){
         AddressDTO addressDTO = addressService.getById(id);
         LOGGER.info("Request to get address by id received");
@@ -31,13 +31,13 @@ public class AddressController {
     }
     @PostMapping("/create")
     public ResponseEntity<AddressDTO> create (@RequestBody AddressDTO request){
-        AddressDTO addressDTO = addressService.save(request);
+        AddressDTO addressDTO = addressService.saveAddress(request);
         LOGGER.info("Request to create a new address received");
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(addressDTO);
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<AddressDTO> delete(@PathVariable String id){
-        addressService.delete(id);
+        addressService.deleteAddress(id);
         LOGGER.info("Request to delete an address");
         return ResponseEntity.noContent().build();
     }

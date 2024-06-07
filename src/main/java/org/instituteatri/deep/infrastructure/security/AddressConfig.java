@@ -13,8 +13,7 @@ public class AddressConfig extends SecurityConfigurerAdapter<DefaultSecurityFilt
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.GET, "/v1/address").permitAll()
                         .requestMatchers(HttpMethod.POST, "/v1/address/create").permitAll()
-                .requestMatchers(HttpMethod.POST,
-                        "/v1/address/create").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/v1/address/delete/{id}").permitAll()
         );
 
     }
