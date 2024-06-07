@@ -27,6 +27,7 @@ public class SecurityConfigurations {
     final AuthSecurityConfig authSecurityConfig;
     final UserSecurityConfig userSecurityConfig;
     final CustomLogoutHandler logoutHandler;
+    final AddressConfig addressConfig;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -61,7 +62,9 @@ public class SecurityConfigurations {
 
         applyAuthSecurityConfig(httpSecurity);
         applyUserSecurityConfig(httpSecurity);
+        applyAddressConfig(httpSecurity);
 
+        // csrf.csrfTokenRepository(customizeCookieCsrfTokenRepository()))
         return httpSecurity
                 .csrf(csrf -> csrf.csrfTokenRepository(customizeCookieCsrfTokenRepository()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -116,6 +119,9 @@ public class SecurityConfigurations {
                         .secure(true)
         );
         return tokenRepository;
+    }
+    private void applyAddressConfig(HttpSecurity http) throws Exception {
+        addressConfig.configure(http);
     }
 }
 
