@@ -20,8 +20,8 @@ public class Defendant {
     private String id;
 
     private String name;
-    @CPF
     private String dateOfBirth;
+    @CPF
     private String idNumber;
 
     @OneToOne

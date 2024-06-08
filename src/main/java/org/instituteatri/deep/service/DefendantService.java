@@ -36,14 +36,14 @@ public class DefendantService {
     }
 
     @Transactional
-    public DefendantDTO save(DefendantDTO defendantDTO){
+    public DefendantDTO saveDefendant(DefendantDTO defendantDTO){
         Defendant defendant = modelMapper.map(defendantDTO, Defendant.class);
         Defendant newDefendant = defendantRepository.save(defendant);
         LOGGER.info("Inserting {} to the database", defendant);
         return modelMapper.map(newDefendant, DefendantDTO.class);
     }
 
-    public void delete(String id){
+    public void deleteDefendant(String id){
         defendantRepository.deleteById(id);
         LOGGER.info("Deleting ID: {} from the database", id);
         LOGGER.info("successfully deleted");

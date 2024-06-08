@@ -32,7 +32,8 @@ public class DefendantController {
         return ResponseEntity.ok(defendantDTOList);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("search" +
+            "/{id}")
     public ResponseEntity<DefendantDTO> getById(@PathVariable String id){
         DefendantDTO defendantDTO = defendantService.getById(id);
         LOGGER.info("Request to get defendant by id received");
@@ -41,14 +42,14 @@ public class DefendantController {
     @PostMapping("/create")
     @Transactional
     public ResponseEntity<DefendantDTO> create(@RequestBody DefendantDTO defendant){
-        DefendantDTO defendantDTO = defendantService.save(defendant);
+        DefendantDTO defendantDTO = defendantService.saveDefendant(defendant);
         LOGGER.info("Request to save a new defendant received");
         return ResponseEntity.status(HttpStatus.CREATED.value()).body(defendantDTO);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id){
-        defendantService.delete(id);
+        defendantService.deleteDefendant(id);
         LOGGER.info("Request to delete a defendant received");
         return ResponseEntity.noContent().build();
     }

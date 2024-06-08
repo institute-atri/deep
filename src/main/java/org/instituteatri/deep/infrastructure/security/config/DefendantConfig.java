@@ -11,7 +11,9 @@ public class DefendantConfig extends SecurityConfigurerAdapter<DefaultSecurityFi
         @Override
         public void configure(HttpSecurity http) throws Exception {
             http.authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.GET, "/v1/defendant").permitAll().requestMatchers(HttpMethod.POST,
-                            "/v1/defendant/create").permitAll());
+                    .requestMatchers(HttpMethod.GET, "/v1/defendant").permitAll()
+                    .requestMatchers(HttpMethod.POST,"/v1/defendant/create").permitAll()
+                    .requestMatchers(HttpMethod.DELETE, "/v1/defendant/delete/{id}").permitAll());
+
         }
 }
