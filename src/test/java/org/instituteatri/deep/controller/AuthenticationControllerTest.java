@@ -1,104 +1,198 @@
 package org.instituteatri.deep.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.instituteatri.deep.dto.request.LoginRequestDTO;
 import org.instituteatri.deep.dto.request.RefreshTokenRequestDTO;
 import org.instituteatri.deep.dto.request.RegisterRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.service.AccountService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.csrf.CsrfToken;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AuthenticationControllerTest {
 
-    @InjectMocks
-    private AuthenticationController authenticationController;
+    @Mock
+    private AuthenticationManager authenticationManager;
 
     @Mock
     private AccountService accountService;
 
-    private MockMvc mockMvc;
+    @Mock
+    HttpServletRequest request;
 
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(authenticationController).build();
+    @Mock
+    HttpServletResponse response;
+
+    @Mock
+    CsrfToken csrfToken;
+
+    @Mock
+    Authentication authentication;
+
+    @InjectMocks
+    private AuthenticationController authenticationController;
+
+    TokenResponseDTO tokenResponseDTO = new TokenResponseDTO("token", "refreshToken");
+
+    @Nested
+    @DisplayName("Tests Login Method")
+    class testLoginMethod {
+
+        @Test
+        @DisplayName("Should return login success")
+        void shouldReturnLoginSuccess() {
+            // Arrange
+            LoginRequestDTO loginRequestSuccess = new LoginRequestDTO("test@localhost.com", "@Test123k+");
+            when(accountService.loginAccount(loginRequestSuccess, authenticationManager)).thenReturn(
+                    ResponseEntity.ok(tokenResponseDTO));
+
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntityLoginSuccess = authenticationController.getLogin(loginRequestSuccess);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntityLoginSuccess.getBody()).isEqualTo(tokenResponseDTO);
+            AssertionsForClassTypes.assertThat(responseEntityLoginSuccess.getStatusCode()).isEqualTo(HttpStatus.OK);
+            verify(accountService).loginAccount(loginRequestSuccess, authenticationManager);
+        }
+
+        @Test
+        @DisplayName("Should return login failure")
+        void shouldReturnLoginFailure() {
+            // Arrange
+            LoginRequestDTO loginRequestFailure = new LoginRequestDTO("test@localhost.com", "@Test123k+");
+            when(accountService.loginAccount(loginRequestFailure, authenticationManager)).thenReturn(
+                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntityLoginFailure = authenticationController.getLogin(loginRequestFailure);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntityLoginFailure.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+            verify(accountService).loginAccount(loginRequestFailure, authenticationManager);
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests Register Method")
+    class testRegisterMethod {
+
+        RegisterRequestDTO registerRequest = new RegisterRequestDTO(
+                "test",
+                "test@localhost.com",
+                "@Test123k+",
+                "@Test123k+");
+
+        @Test
+        @DisplayName("Should return registration success")
+        void shouldReturnRegistrationSuccess() {
+            // Arrange
+            when(accountService.registerAccount(registerRequest)).thenReturn(
+                    ResponseEntity.status(HttpStatus.OK).build());
+
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntityRegister = authenticationController.register(registerRequest);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntityRegister.getStatusCode()).isEqualTo(HttpStatus.OK);
+            verify(accountService).registerAccount(registerRequest);
+        }
+
+        @Test
+        @DisplayName("Should return registration failure")
+        void shouldReturnRegistrationFailure() {
+            // Arrange
+            when(accountService.registerAccount(registerRequest)).thenReturn(
+                    ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
+
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntity = authenticationController.register(registerRequest);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+            verify(accountService).registerAccount(registerRequest);
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests Logout Method")
+    class testLogoutMethod {
+
+        @Test
+        @DisplayName("Should return logout success")
+        void shouldReturnLogoutSuccess() {
+            // Act
+            ResponseEntity<Void> responseEntitySuccess = authenticationController.logout(request, response, authentication);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntitySuccess.getStatusCode()).isEqualTo(HttpStatus.OK);
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests RefreshToken Method")
+    class testRefreshTokenMethod {
+
+        RefreshTokenRequestDTO refreshTokenRequest = new RefreshTokenRequestDTO("refreshToken");
+
+        @Test
+        @DisplayName("Should return refreshToken success")
+        void shouldReturnRefreshTokenSuccess() {
+            // Arrange
+            when(accountService.refreshToken(refreshTokenRequest)).thenReturn(
+                    ResponseEntity.ok(tokenResponseDTO));
+
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntityTokenDTO = authenticationController.refreshToken(refreshTokenRequest);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntityTokenDTO.getBody()).isEqualTo(tokenResponseDTO);
+            AssertionsForClassTypes.assertThat(responseEntityTokenDTO.getStatusCode()).isEqualTo(HttpStatus.OK);
+            verify(accountService).refreshToken(refreshTokenRequest);
+        }
+
+        @Test
+        @DisplayName("Should return refreshToken failure")
+        void shouldReturnRefreshTokenFailure() {
+            // Arrange
+            when(accountService.refreshToken(refreshTokenRequest))
+                    .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntity = authenticationController.refreshToken(refreshTokenRequest);
+
+            // Assert
+            AssertionsForClassTypes.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+            verify(accountService).refreshToken(refreshTokenRequest);
+        }
     }
 
     @Test
-    void getLogin_WithValidCredentials_ReturnsResponseEntityWithStatus200() throws Exception {
-        // Given
-        LoginRequestDTO authDto = new LoginRequestDTO("test@localhost.com", "@Test123k+");
-        ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(new TokenResponseDTO("token", "refreshToken"), HttpStatus.OK);
+    @DisplayName("Should Return CsrfToken")
+    void shouldReturnCsrfToken() {
+        // Arrange
+        when(request.getAttribute(CsrfToken.class.getName())).thenReturn(csrfToken);
 
-        // When
-        when(accountService.loginAccount(any(LoginRequestDTO.class), any(AuthenticationManager.class))).thenReturn(expectedResponse);
+        // Act
+        CsrfToken returnedCsrfToken = authenticationController.csrf(request);
 
-        // Then
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/login")
-                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(authDto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void register_WithValidRegisterDTO_ReturnsResponseEntityWithStatus201() {
-        // Given
-        RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
-                "Test User",
-                "test@example.com",
-                "Password123+",
-                "Password123+");
-
-        ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(HttpStatus.CREATED);
-        when(accountService.registerAccount(any(RegisterRequestDTO.class))).thenReturn(expectedResponse);
-
-        // When
-        ResponseEntity<TokenResponseDTO> actualResponse = authenticationController.register(registerRequestDTO);
-
-        // Then
-        assertThat(actualResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    }
-
-    @Test
-    void logout_WhenCalled_ReturnsResponseEntityWithStatus200() throws Exception {
-        // When
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/auth/logout"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void refreshToken_WithValidRefreshToken_ReturnsResponseEntityWithStatus200() {
-        // Given
-        RefreshTokenRequestDTO tokenDTO = new RefreshTokenRequestDTO("newToken");
-        ResponseEntity<TokenResponseDTO> expectedResponse = new ResponseEntity<>(new TokenResponseDTO("newToken", "newRefreshToken"), HttpStatus.OK);
-        when(accountService.refreshToken(any(RefreshTokenRequestDTO.class))).thenReturn(expectedResponse);
-
-        // When
-        ResponseEntity<TokenResponseDTO> responseEntity = authenticationController.refreshToken(tokenDTO);
-
-        // Then
-        assertThat(responseEntity)
-                .isNotNull()
-                .extracting(ResponseEntity::getStatusCode)
-                .isEqualTo(HttpStatus.OK);
-        assertThat(responseEntity.getBody())
-                .isNotNull()
-                .extracting(TokenResponseDTO::token, TokenResponseDTO::refreshToken)
-                .containsExactly("newToken", "newRefreshToken");
+        // Assert
+        assertEquals(csrfToken, returnedCsrfToken);
     }
 }

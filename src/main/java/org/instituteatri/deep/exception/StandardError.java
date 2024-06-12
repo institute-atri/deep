@@ -1,3 +1,4 @@
+
 package org.instituteatri.deep.exception;
 
 import lombok.Builder;

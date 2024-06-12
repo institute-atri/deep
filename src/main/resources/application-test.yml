@@ -19,6 +19,9 @@ spring:
           options:
             model: llama3
 
+gemini:
+  key:
+
 security:
   token:
     private-key: 'classpath:app.key'
