@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -28,53 +28,88 @@ public class DocumentsControllerTest {
 
     @Test
     @DisplayName("When the Id is valid, it should return the document")
-    public void whenValidId_ThenReturnDocument() {
+    public void when_valid_id_then_return_document() {
 
         //Given
-        String DocumentId = "testId1";
-        DocumentsResponseDTO expectedDocument = new DocumentsResponseDTO("testId1", "testName1", "testDescription1", null, null, null, null, null, null);
-        when(documentsService.getDocumentsById("1")).thenReturn(expectedDocument);
+        String id = "1";
+        DocumentsResponseDTO expectedDocument = new DocumentsResponseDTO("test2", "testName2", "testDescription2", null, null, null, null, null, null);
+        when(documentsService.getDocumentsById(id)).thenReturn(expectedDocument);
 
-        //when
-        ResponseEntity<DocumentsResponseDTO> responseEntity = DocumentsController.getDocumentById(DocumentId);
+        //When
+        ResponseEntity<DocumentsResponseDTO> responseEntity = DocumentsController.getDocumentById(id);
 
         //Then
-        
-
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isEqualTo(expectedDocument);
     }
 
 
     @Test
-
-    public void testGetDocumentByOccurrenceId() {
+    @DisplayName("When the OccurrenceId is valid, it should return the document")
+    public void when_valid_occurrence_id_then_return_document() {
         List<DocumentsResponseDTO> expectedDocuments = Arrays.asList(
                 new DocumentsResponseDTO("1", "testName1", "testDescription1", null, null, null, null, null, null),
                 new DocumentsResponseDTO("2", "testName2", "testDescription2", null, null, null, null, null, null)
         );
         when(documentsService.getDocumentsByOccurrenceId("1")).thenReturn(expectedDocuments);
 
-        //when
+        //When
         ResponseEntity<List<DocumentsResponseDTO>> responseEntity = DocumentsController.getDocumentsByOccurrenceId("1");
 
-
+        //Then
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isEqualTo(expectedDocuments);
 
     }
 
     @Test
-    public void testDeleteDocumentById() {
-        documentsService.deleteDocumentById("1");
+    @DisplayName("When the Id is valid, it should delete the document")
+    public void when_valid_id_then_delete_document() {
+
+        //Given
+        String documentId = "1";
+
+        //When
+        ResponseEntity<Void> responseEntity = DocumentsController.deleteDocumentById(documentId);
+
+        //Then
+        verify(documentsService).deleteDocumentById("1");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNull();
+
     }
 
     @Test
-    public void testUpdateDocumentById() {
-        when(documentsService.updateDocumentsById(new DocumentsResponseDTO())).thenReturn(new DocumentsResponseDTO());
+    @DisplayName("When the Id is valid, it should update the document")
+    public void when_valid_id_then_update_document() {
+        // Given
+        DocumentsResponseDTO updateDocument = new DocumentsResponseDTO("testId1", "testName1", "testDescription1", null, null, null, null, null, null);
+        when(documentsService.updateDocumentsById(updateDocument)).thenReturn(updateDocument);
+
+        // When
+        ResponseEntity<DocumentsResponseDTO> responseEntity = DocumentsController.updateDocumentById(updateDocument);
+
+        // Then
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isEqualTo(updateDocument);
     }
 
-    @Test
-    public void testCreateDocuments() {
-        when(documentsService.createDocuments(new DocumentsResponseDTO())).thenReturn(new DocumentsResponseDTO());
 
-        String result = documentsService.createDocuments(new DocumentsResponseDTO()).toString();
-        assertEquals("DocumentsResponseDTO(id=null, name=null, description=null, date=null, place=null, type=null, currentState=null, message=null, responsible=null)", result);
+    @Test
+    @DisplayName("This test must create a new Document and return the created")
+    public void this_test_must_create_a_document() {
+        //Given
+        DocumentsResponseDTO newDocument = new DocumentsResponseDTO("testNewDocId", "testNewDocName", "testNewDocDescription", null, null, null, null, null, null);
+        DocumentsResponseDTO createdDocument = new DocumentsResponseDTO("testId1", "testName1", "testDescription1", null, null, null, null, null, null);
+        when(documentsService.createDocuments(newDocument)).thenReturn(createdDocument);
+
+        //When
+        ResponseEntity<DocumentsResponseDTO> responseEntity = DocumentsController.createDocument(newDocument);
+
+        //Then
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(responseEntity.getBody()).isEqualTo(createdDocument);
     }
 }

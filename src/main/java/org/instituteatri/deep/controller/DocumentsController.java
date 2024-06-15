@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.instituteatri.deep.service.DocumentsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.instituteatri.deep.dto.response.DocumentsResponseDTO;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class DocumentsController {
     ResponseEntity<DocumentsResponseDTO> createDocument(@RequestBody DocumentsResponseDTO request) {
         DocumentsResponseDTO response = documentsService.createDocuments(request);
         logger.info("Creating document with ID {}", request.getId());
-        return ResponseEntity.ok(documentsService.createDocuments(request));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @Operation(

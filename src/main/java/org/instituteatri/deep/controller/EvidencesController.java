@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.instituteatri.deep.service.EvidencesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.instituteatri.deep.dto.response.EvidencesResponseDTO;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class EvidencesController {
 public ResponseEntity<EvidencesResponseDTO> createEvidence(@RequestBody EvidencesResponseDTO request) {
 EvidencesResponseDTO response = evidencesService.createEvidences(request);
         logger.info("Creating evidence with ID {}", request.getId());
-        return ResponseEntity.ok(evidencesService.createEvidences(request));
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 @Operation(
             method = "GET",
