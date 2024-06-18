@@ -1,25 +1,27 @@
 package org.instituteatri.deep.controller;
 
-import org.instituteatri.deep.dto.request.RegisterRequestDTO;
+import org.instituteatri.deep.dto.request.UpdateUserRequestDTO;
 import org.instituteatri.deep.dto.response.TokenResponseDTO;
 import org.instituteatri.deep.dto.response.UserResponseDTO;
+import org.instituteatri.deep.exception.user.UserNotFoundException;
 import org.instituteatri.deep.service.UserService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
@@ -28,108 +30,179 @@ class UserControllerTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private Authentication authentication;
+
     @InjectMocks
     private UserController userController;
 
-    private final RegisterRequestDTO registerRequestDTO = new RegisterRequestDTO(
-            "Test User",
-            "test@example.com",
-            "Password123+",
-            "Password123+"
-    );
-    private final String id = "123";
-    private final Authentication authentication = Mockito.mock(Authentication.class);
+    private final String userId = "123";
 
-    @Test
-    @DisplayName("When the service returns multiple users, it should return a list of users")
-    void getAllUsers_WhenServiceReturnsMultipleUsers_ReturnsListOfUsers() {
-        // Given
-        List<UserResponseDTO> expectedUsers = Arrays.asList(
-                new UserResponseDTO("testId1", "testName1", "testEmail1@example.com"),
-                new UserResponseDTO("testId2", "testName2", "testEmail2@example.com")
+    @Nested
+    @DisplayName("Test Get All Users Method")
+    class testGetAllUsersMethod {
+        @Test
+        @DisplayName("Should get all users with success")
+        void shouldGetAllUsersWithSuccess() {
+            // Arrange
+            List<UserResponseDTO> expectedResponseUserDTO = new ArrayList<>();
+            expectedResponseUserDTO.add(new UserResponseDTO(
+                    userId,
+                    "Name",
+                    "test@localhost.com"
+            ));
+            expectedResponseUserDTO.add(new UserResponseDTO(
+                    "1234",
+                    "Name",
+                    "user@localhost.com"
+            ));
+            when(userService.getAllUsers()).thenReturn(ResponseEntity.ok(expectedResponseUserDTO));
+
+            // Act
+            ResponseEntity<List<UserResponseDTO>> responseEntityUsers = userController.getAllUsers();
+
+            // Assert
+            assertThat(responseEntityUsers.getBody()).isEqualTo(expectedResponseUserDTO);
+            assertThat(responseEntityUsers.getStatusCode()).isEqualTo(HttpStatus.OK);
+            verify(userService).getAllUsers();
+        }
+
+        @Test
+        @DisplayName("Should get all users with success when not found")
+        void shouldGetAllUsersWithSuccessWhenNotFound() {
+            // Arrange
+            when(userService.getAllUsers()).thenThrow(new UserNotFoundException("No users found"));
+
+            // Act
+            Exception exception = assertThrows(UserNotFoundException.class, () -> userController.getAllUsers());
+
+            // Assert
+            assertThat(exception.getMessage()).isEqualTo("No users found");
+        }
+    }
+
+    @Nested
+    @DisplayName("Tests Get User By Id Method")
+    class testGetUserByIdMethod {
+        @Test
+        @DisplayName("Should get user by id with success")
+        void shouldGetUserByIdWithSuccess() {
+            // Arrange
+            String expectedId = "123";
+            UserResponseDTO expectedResponseDTO = new UserResponseDTO(
+                    expectedId,
+                    "Name",
+                    "user@localhost.com"
+            );
+            when(userService.getByUserId(expectedId)).thenReturn(ResponseEntity.ok(expectedResponseDTO));
+
+            // Act
+            ResponseEntity<UserResponseDTO> responseEntityUserId = userController.getByUserId(expectedId);
+
+            // Assert
+            assertThat(responseEntityUserId.getBody()).isEqualTo(expectedResponseDTO);
+            assertThat(responseEntityUserId.getStatusCode()).isEqualTo(HttpStatus.OK);
+            verify(userService).getByUserId(expectedId);
+        }
+
+        @Test
+        @DisplayName("Should get user by id with success when not found")
+        void shouldGetUserByIdWithSuccessWhenNotFound() {
+            // Arrange
+            when(userService.getByUserId(userId)).thenThrow(new UserNotFoundException(userId));
+
+            // Act
+            Exception exception = assertThrows(UserNotFoundException.class, () -> userController.getByUserId(userId));
+
+            // Assert
+            assertThat(exception.getMessage()).isEqualTo(new UserNotFoundException(userId).getMessage());
+            verify(userService).getByUserId(userId);
+        }
+    }
+
+
+    @Nested
+    @DisplayName("Tests Update User Method")
+    class testUpdateUserMethod {
+
+        UpdateUserRequestDTO updateUserRequestDTO = new UpdateUserRequestDTO(
+                "Name",
+                "test@example.com",
+                "Password123+",
+                "Password123+"
         );
-        ResponseEntity<List<UserResponseDTO>> expectedResponse = ResponseEntity.ok(expectedUsers);
-        when(userService.getAllUsers()).thenReturn(expectedResponse);
 
-        // When
-        ResponseEntity<List<UserResponseDTO>> responseEntity = userController.getAllUsers();
+        @Test
+        @DisplayName("Should update user success")
+        void shouldUpdateUserSuccess() {
+            // Arrange
+            ResponseEntity<TokenResponseDTO> expectedTokenResponse =
+                    ResponseEntity.ok().body(new TokenResponseDTO(
+                            "Token", "RefreshToken"));
+            when(userService.updateUser(userId, updateUserRequestDTO, authentication)).thenReturn(expectedTokenResponse);
 
-        // Then
-        assertThat(responseEntity)
-                .isEqualTo(expectedResponse)
-                .extracting(ResponseEntity::getStatusCode, ResponseEntity::getBody)
-                .containsExactly(HttpStatus.OK, expectedUsers);
+            // Act
+            ResponseEntity<TokenResponseDTO> responseEntityTokenDTO = userController.updateUser(userId, updateUserRequestDTO, authentication);
+
+            // Assert
+            assertThat(responseEntityTokenDTO)
+                    .isEqualTo(expectedTokenResponse)
+                    .extracting(ResponseEntity::getStatusCode)
+                    .isEqualTo(HttpStatus.OK);
+            verify(userService).updateUser(userId, updateUserRequestDTO, authentication);
+        }
+
+        @Test
+        @DisplayName("Should return not found when user is not found")
+        void shouldReturnNotFoundWhenUserNotFound() {
+            // Arrange
+            when(userService.updateUser(userId, updateUserRequestDTO, authentication))
+                    .thenThrow(new UserNotFoundException(userId));
+
+            // Act
+            Exception exception = assertThrows(UserNotFoundException.class,
+                    () -> userController.updateUser(userId, updateUserRequestDTO, authentication));
+
+            // Assert
+            assertThat(exception.getMessage()).isEqualTo(new UserNotFoundException(userId).getMessage());
+            verify(userService).updateUser(userId, updateUserRequestDTO, authentication);
+        }
     }
 
-    @Test
-    @DisplayName("When the service returns an empty list, it must return an empty list")
-    void testGetAllUsers_WhenServiceReturnsEmptyList_ShouldReturnEmptyList() {
-        // Given
-        List<UserResponseDTO> expectedUsers = Collections.emptyList();
-        ResponseEntity<List<UserResponseDTO>> expectedResponse = ResponseEntity.ok(expectedUsers);
-        when(userService.getAllUsers()).thenReturn(expectedResponse);
+    @Nested
+    class deleteUser {
+        @Test
+        @DisplayName("Should delete user success")
+        void shouldDeleteUserSuccess() {
+            // Arrange
+            ResponseEntity<Void> expectedResponseDelete = ResponseEntity.noContent().build();
+            when(userService.deleteUser(userId)).thenReturn(expectedResponseDelete);
 
-        // When
-        ResponseEntity<List<UserResponseDTO>> responseEntity = userController.getAllUsers();
+            // Act
+            ResponseEntity<Void> responseEntityDelete = userController.deleteUser(userId);
 
-        // Then
-        assertThat(responseEntity)
-                .isEqualTo(expectedResponse)
-                .extracting(ResponseEntity::getStatusCode, ResponseEntity::getBody)
-                .containsExactly(HttpStatus.OK, expectedUsers);
-    }
+            // Assert
+            assertThat(responseEntityDelete)
+                    .isEqualTo(expectedResponseDelete)
+                    .extracting(ResponseEntity::getStatusCode)
+                    .isEqualTo(HttpStatus.NO_CONTENT);
+            verify(userService).deleteUser(userId);
+        }
 
+        @Test
+        @DisplayName("Should return not found when user is not found")
+        void shouldReturnNotFoundWhenUserNotFound() {
+            // Arrange
+            when(userService.deleteUser(userId))
+                    .thenThrow(new UserNotFoundException(userId));
 
-    @Test
-    @DisplayName("When the ID is valid, it should return the corresponding user")
-    void testGetUserById_WhenValidId_ThenReturnUser() {
-        // Given
-        String userId = "testId1";
-        UserResponseDTO expectedResponse = new UserResponseDTO(userId, "testName1", "testEmail1@example.com");
-        when(userService.getByUserId(userId)).thenReturn(expectedResponse);
+            // Act
+            Exception exception = assertThrows(UserNotFoundException.class,
+                    () -> userController.deleteUser(userId));
 
-        // When
-        ResponseEntity<UserResponseDTO> responseEntity = userController.getByUserId(userId);
-
-        // Then
-        assertThat(responseEntity.getBody())
-                .isEqualTo(expectedResponse);
-        assertThat(responseEntity.getStatusCode())
-                .isEqualTo(HttpStatus.OK);
-    }
-
-
-    @Test
-    @DisplayName("Upon receiving a valid request, it should return the updated user")
-    void updateUser_WhenValidRequest_ThenReturnUpdatedUser() {
-        // Given
-        ResponseEntity<TokenResponseDTO> expectedResponse = ResponseEntity.ok().body(new TokenResponseDTO("Token", "RefreshToken"));
-        when(userService.updateUser(id, registerRequestDTO, authentication)).thenReturn(expectedResponse);
-
-        // When
-        ResponseEntity<TokenResponseDTO> responseEntity = userController.updateUser(id, registerRequestDTO, authentication);
-
-        // Then
-        assertThat(responseEntity)
-                .isEqualTo(expectedResponse)
-                .extracting(ResponseEntity::getStatusCode)
-                .isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    @DisplayName("Upon receiving a valid request, it should return an empty content response")
-    void deleteUser_WhenValidRequest_ThenReturnNoContentResponse() {
-        // Given
-        ResponseEntity<Void> expectedResponse = ResponseEntity.noContent().build();
-        when(userService.deleteUser(id)).thenReturn(expectedResponse);
-
-        // When
-        ResponseEntity<Void> responseEntity = userController.deleteUser(id);
-
-        // Then
-        assertThat(responseEntity)
-                .isEqualTo(expectedResponse)
-                .extracting(ResponseEntity::getStatusCode)
-                .isEqualTo(HttpStatus.NO_CONTENT);
+            // Assert
+            assertThat(exception.getMessage()).isEqualTo(new UserNotFoundException(userId).getMessage());
+            verify(userService).deleteUser(userId);
+        }
     }
 }
