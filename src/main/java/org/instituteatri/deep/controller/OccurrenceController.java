@@ -88,14 +88,7 @@ public class OccurrenceController {
     }
     @Operation(
             method = "POST",
-            summary = "Create a new occurrence.",
-            description = "Endpoint to create a new occurrence with the details provided in the request body. " +
-                    "Required JSON fields: 'name' (String) and 'description' (String). " +
-                    "Copy and use the following example JSON in the request body: " +
-                    " {" +
-                    "        \"name\": \"string\"," +
-                    "        \"description\": \"string\"" +
-                    " }"
+            summary = "Create a new occurrence."
     )
     @ApiResponses(value = {
             @ApiResponse(
